@@ -4,7 +4,7 @@ import { setupPageSwitching } from "./setup/pageSwitch.js";
 const layout = html`
   <div id="root"/>
   <div>
-    <button id="main_page_btn">API Requests</button>
+    <button id="api_page_btn">API Page</button>
     <button id="test_page_btn">Test Page</button>
   </div>
 `;
@@ -15,8 +15,9 @@ const root = document.getElementById("root");
 
 const pagesConfig = [
   // skibedie: das erste element wird als haupt page erkannt.
-  { buttonId: "main_page_btn", modulePath: "../pages/main_page.js" },
-  { buttonId: "test_page_btn", modulePath: "../pages/test_page.js "}
+  { buttonId: "none", modulePath: "../pages/main_page.js" },
+  { buttonId: "api_page_btn", modulePath: "../pages/api_page.js" },
+  { buttonId: "test_page_btn", modulePath: "../pages/test_page.js" }
 ];
 
 setupPageSwitching(root, pagesConfig);
