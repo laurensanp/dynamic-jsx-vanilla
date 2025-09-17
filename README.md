@@ -6,7 +6,7 @@ Dies ist eine einfache Node.js-Anwendung, die mit Express erstellt wurde. Sie di
 
 1.  **Repository klonen:**
     ```bash
-    git clone <Ihre-Repository-URL>
+    git clone https://github.com/laurensanp/dynamic-jsx-vanilla
     cd ts
     ```
 2.  **Abhängigkeiten installieren:**
@@ -25,7 +25,7 @@ Dies ist eine einfache Node.js-Anwendung, die mit Express erstellt wurde. Sie di
     npm run dev
     ```
 2.  **Anwendung aufrufen:**
-    Öffnen Sie Ihren Webbrowser und navigieren Sie zu `http://localhost:8000` oder mittels der IP vom Server.
+    Öffnen Sie Ihren Webbrowser und navigieren Sie zu `http://localhost:8000` oder mittels der IP4 vom Server.
 
     *   Die Hauptseite (`_main_page.js`) wird standardmäßig geladen.
     *   Sie können zur "API-Seite" (`api_page.js`) navigieren, um mit den Endpunkten `/api/v1/hello` und `/api/v1/shut` zu interagieren.
