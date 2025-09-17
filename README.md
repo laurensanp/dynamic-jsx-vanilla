@@ -1,4 +1,4 @@
-# TS Anwendung
+# ts 🥀🎋 anwendung
 
 Dies ist eine einfache Node.js-Anwendung, die mit Express erstellt wurde. Sie dient statische Dateien aus, verarbeitet API-Anfragen und implementiert einen grundlegenden Seitenwechselmechanismus auf der Client-Seite.
 
