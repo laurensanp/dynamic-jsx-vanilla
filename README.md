@@ -13,9 +13,9 @@ Dies ist eine einfache Node.js-Anwendung, die mit Express erstellt wurde. Sie di
     ```bash
     npm install
     # oder
-    # yarn install
+    yarn install
     # oder
-    # pnpm install
+    pnpm install
     ```
 
 ## Verwendung
