@@ -23,6 +23,8 @@ Dies ist eine einfache Node.js-Anwendung, die mit Express erstellt wurde. Sie di
 1.  **Entwicklungsserver starten:**
     ```bash
     npm run dev
+    # oder
+    yarn dev
     ```
 2.  **Anwendung aufrufen:**
     Öffnen Sie Ihren Webbrowser und navigieren Sie zu `http://localhost:8000` oder mittels der IP4 vom Server.
