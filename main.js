@@ -17,5 +17,5 @@ app.use("/public", express.static(path.join(__dirname, "public")));
 app.use("/", routes);
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log.server(`server running on http://localhost:${PORT}`);
+  console.log.server(`running on http://localhost:${PORT}`);
 });

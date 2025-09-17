@@ -5,8 +5,7 @@ const fs = require("fs");
 const { isAuthenticated } = require("../middleware/auth");
 const { LOG_FILE } = require("../utils/logger");
 require("../utils/logger");
-// const child_process = require("child_process");
-// const os = require("os");
+const child_process = require("child_process");
 
 
 router.get("/", isAuthenticated, (req, res) => {
@@ -26,21 +25,21 @@ router.get("/api/v1/logout", (req, res) => {
   res.redirect("/");
 });
 
-router.get("/api/v1/hello", (req, res) => {
+router.get("/api/v1/hello", isAuthenticated, (req, res) => {
   res.json({ message: "here da data." });
   console.log.api(`user: ${req.userIp} requested hello_data.`);
 });
 
-router.get("/api/v1/shut", (req, res) => {
+router.get("/api/v1/shut", isAuthenticated, (req, res) => {
   res.json({ message: "shut down, temporarily disabled." });
   console.log.api(`user: ${req.userIp} requested shutdown.`);
-  // child_process.exec("shutdown /s /t 0", (error, stdout, stderr) => {
-  //   if (error) {
-  //     console.error.shutdown(`Error: ${error.message}`);
-  //     return;
-  //   }
-  //   console.log.shutdown(`shut executed`); // Assuming you want a shutdown log as well
-  // });
+  child_process.exec("shutdown /s /t 0", (error, stdout, stderr) => {
+    if (error) {
+      console.error.shutdown(`Error: ${error.message}`);
+      return;
+    }
+    console.log.shutdown(`shut executed`);
+  });
 });
 
 router.get("/api/v1/logs", isAuthenticated, (req, res) => {
