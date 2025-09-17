@@ -6,13 +6,14 @@ const layout = html`
   <div>
     <button id="api_page_btn">API Page</button>
     <button id="test_page_btn">Test Page</button>
+    <button id="log_page_btn">Logs</button>
     <button id="logout_btn">Logout</button>
   </div>
 `;
 
 render(layout, document.body);
 
-const root = document.getElementById("root");
+const root = document.getElementById("root"); 
 const logoutButton = document.getElementById("logout_btn");
 
 const pagesConfig = [
@@ -20,6 +21,7 @@ const pagesConfig = [
   { buttonId: "none", modulePath: "../pages/_main_page.js" },
   { buttonId: "api_page_btn", modulePath: "../pages/api_page.js" },
   { buttonId: "test_page_btn", modulePath: "../pages/test_page.js" },
+  { buttonId: "log_page_btn", modulePath: "../pages/log_page.js" },
 ];
 
 logoutButton.addEventListener("click", async () => {

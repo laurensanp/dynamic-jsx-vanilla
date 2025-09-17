@@ -30,7 +30,7 @@
     background: #444;
 }
 
-#output {
+#output, #log_otp {
     margin-top: 20px;
     width: 80%;
     max-width: 600px;
