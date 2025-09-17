@@ -3,13 +3,10 @@ const app = express();
 const PORT = 8000;
 const path = require("path");
 const cors = require("cors");
-// const child_process = require("child_process");
-// const os = require("os");
 const cookieParser = require("cookie-parser");
 const { getIp } = require("./private/middleware/auth");
-require("./private/utils/logger"); // Initialize logging
 const routes = require("./private/routes");
-
+require("./private/utils/logger");
 
 app.use(cors({ origin: true }));
 app.use(express.json());
@@ -20,5 +17,5 @@ app.use("/public", express.static(path.join(__dirname, "public")));
 app.use("/", routes);
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`server running on http://localhost:${PORT}`);
+  console.log.server(`server running on http://localhost:${PORT}`);
 });
