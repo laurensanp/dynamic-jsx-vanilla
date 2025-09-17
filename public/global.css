@@ -41,3 +41,10 @@
     background: transparent;
     border: none;
 }
+
+#logout_btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin-right: 15px;
+}

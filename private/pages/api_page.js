@@ -20,7 +20,7 @@ export function App() {
 
   sendBtn.addEventListener("click", async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/v1/hello");
+      const res = await fetch("/api/v1/hello");
       const data = await res.json();
       appendOutput(data.message);
     } catch (err) {
@@ -29,8 +29,12 @@ export function App() {
   });
 
   shutBtn.addEventListener("click", async () => {
+    const confirmed = window.confirm("Bist du sicher, dass du den Server herunterfahren möchtest?");
+    if (!confirmed) return;
     try {
-      await fetch("http://localhost:8000/api/v1/shut");
+      const res = await fetch("/api/v1/shut");
+      const data = await res.json();
+      appendOutput(data.message)
     } catch (err) {
       output.innerText = `Error: ${err}`;
     }

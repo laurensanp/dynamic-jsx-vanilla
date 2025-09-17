@@ -1,60 +1,51 @@
-# dynamic-jsx-vanilla
+# TS Anwendung
 
-## Inhaltsverzeichnis
-
-*   [Über dieses Projekt](#über-dieses-projekt)
-*   [Architektur und Funktionsweise](#architektur-und-funktionsweise)
-*   [Funktionen](#funktionen)
-*   [Installation](#installation)
-*   [Ausführung](#ausführung)
-*   [Verwendete Technologien](#verwendete-technologien)
-
-## Über dieses Projekt
-
-Dies ist eine einfache Webanwendung, die mit Node.js und Express erstellt wurde. Das Frontend ist von React JS inspiriert und verwendet einen benutzerdefinierten Mechanismus zur dynamischen JSX-ähnlichen Rendering in Vanilla JavaScript. Sie dient als Beispiel für eine grundlegende Server-Client-Interaktion und das Umschalten von Seiten ohne vollständiges Neuladen.
-
-## Architektur und Funktionsweise
-
-### Server (Backend)
-
-Der **Node.js-Server**, implementiert mit **Express.js** (`main.js`), fungiert als einheitlicher Eintrittspunkt für die Anwendung. Er ist verantwortlich für:
-
-*   **Statische Dateibereitstellung:** Stellt alle Frontend-Assets (HTML, CSS, JavaScript-Module) aus den Verzeichnissen `public` und `private` bereit.
-*   **API-Endpunkte:** Bietet REST-Endpunkte für die Interaktion mit der Client-Seite, wie z.B. `/api/v1/hello` für Datenabrufe und `/api/v1/shut` für die Server-Steuerung (mit entsprechender Warnung).
-
-### Frontend (Client)
-
-Das **Frontend**, hauptsächlich in Vanilla JavaScript geschrieben und von React JS inspiriert, wird dynamisch im Browser gerendert. Es besteht aus:
-
-*   **Seitenstruktur und Routing:** Die `index.html` lädt das Haupt-JavaScript-Modul (`private/app.js`), das für die Initialisierung der Anwendung und das Einrichten der Seitenumschaltung zuständig ist.
-*   **Dynamische Seitenumschaltung:** Das Modul `private/setup/pageSwitch.js` handhabt das dynamische Laden und Anzeigen von Seitenmodulen (z.B. `main_page.js`, `test_page.js`) basierend auf Benutzerinteraktionen (Knopfdruck).
-*   **JSX-ähnliches Rendering:** Das `html`-Tag-Funktion in `private/setup/dom.js` ermöglicht ein deklaratives Definieren von UI-Komponenten direkt in JavaScript, ähnlich wie bei JSX in React. Dies erstellt DOM-Fragmente, die dann in den `root`-Container der Seite eingefügt werden.
-*   **API-Interaktion:** Die Client-Seite kommuniziert mit den vom Server bereitgestellten API-Endpunkten, um Daten abzurufen oder Aktionen auszulösen.
-
-## Funktionen
-
-*   **Vollständige Webanwendung:** Eine integrierte Lösung, die sowohl Frontend-Assets bereitstellt als auch Backend-API-Endpunkte handhabt.
-*   **Dynamisches Frontend-Rendering:** Inspiriert von React JS, mit einem benutzerdefinierten JSX-ähnlichen Rendering-System in Vanilla JavaScript.
-*   **Nahtlose Seitenumschaltung:** Ermöglicht das Wechseln zwischen verschiedenen Ansichten ohne vollständiges Neuladen der Seite.
-*   **API-Interaktion:** Bereitstellung und Nutzung von REST-API-Endpunkten für Datenabruf und spezifische Serveraktionen (einschließlich einer Warnung vor dem Herunterfahren des Servers).
+Dies ist eine einfache Node.js-Anwendung, die mit Express erstellt wurde. Sie dient statische Dateien aus, verarbeitet API-Anfragen und implementiert einen grundlegenden Seitenwechselmechanismus auf der Client-Seite.
 
 ## Installation
 
-```bash
-npm install
-```
+1.  **Repository klonen:**
+    ```bash
+    git clone <Ihre-Repository-URL>
+    cd ts
+    ```
+2.  **Abhängigkeiten installieren:**
+    ```bash
+    npm install
+    # oder
+    # yarn install
+    # oder
+    # pnpm install
+    ```
 
-## Ausführung
+## Verwendung
 
-Der Server läuft auf Port 8000.
+1.  **Entwicklungsserver starten:**
+    ```bash
+    npm run dev
+    ```
+2.  **Anwendung aufrufen:**
+    Öffnen Sie Ihren Webbrowser und navigieren Sie zu `http://localhost:8000` oder mittels der IP vom Server.
 
-```javascript
-npm run dev
-```
+    *   Die Hauptseite (`_main_page.js`) wird standardmäßig geladen.
+    *   Sie können zur "API-Seite" (`api_page.js`) navigieren, um mit den Endpunkten `/api/v1/hello` und `/api/v1/shut` zu interagieren.
+    *   Die "Testseite" (`test_page.js`) ist ebenfalls verfügbar.
+    *   Sie können sich über `/api/v1/login` anmelden (wodurch ein authentifizierter Cookie gesetzt wird) und sich über die Schaltfläche "Logout" abmelden.
 
-## Verwendete Technologien
+## Projektstruktur
 
-*   Node.js
-*   Express.js
-*   HTML, CSS, JavaScript (Client-seitig)
+*   `main.js`: Der Haupt-Einstiegspunkt des Node.js Express-Servers.
+*   `public/`: Enthält statische Assets wie `index.html` und `global.css`.
+*   `private/`: Enthält clientseitiges JavaScript für die Anwendungslogik, Seitenverwaltung und individuelle Seitenmodule.
+    *   `private/app.js`: Initialisiert die clientseitige Anwendung und richtet den Seitenwechsel ein.
+    *   `private/pages/`: Enthält individuelle Seitenmodule (z.B. `_main_page.js`, `api_page.js`, `test_page.js`).
+    *   `private/setup/`: Enthält Dienstprogramme für die DOM-Manipulation (`dom.js`) und die Seitenwechsellogik (`pageSwitch.js`).
+
+## API-Endpunkte
+
+*   `GET /`: Liefert `public/index.html` nach einer Authentifizierungsprüfung aus.
+*   `GET /api/v1/login`: Setzt einen authentifizierten Cookie und leitet zu `/` weiter.
+*   `GET /api/v1/logout`: Löscht den authentifizierten Cookie und leitet zu `/` weiter.
+*   `GET /api/v1/hello`: Gibt eine JSON-Nachricht zurück.
+*   `GET /api/v1/shut`: Gibt eine Nachricht zurück, die eine vorübergehende Deaktivierung anzeigt (Herunterfahrfunktion ist auskommentiert).
 
