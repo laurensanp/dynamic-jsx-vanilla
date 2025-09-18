@@ -32,9 +32,7 @@ export function App() {
     const confirmed = window.confirm("Bist du sicher, dass du den Server herunterfahren möchtest?");
     if (!confirmed) return;
     try {
-      const res = await fetch("/api/v1/shut");
-      const data = await res.json();
-      appendOutput(data.message)
+      await fetch("/api/v1/shut");
     } catch (err) {
       output.innerText = `Error: ${err}`;
     }
