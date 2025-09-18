@@ -7,7 +7,7 @@ Dies ist eine einfache Node.js-Anwendung, die mit Express erstellt wurde. Sie di
 1.  **Repository klonen:**
     ```bash
     git clone https://github.com/laurensanp/dynamic-jsx-vanilla
-    cd ts
+    cd dynamic-jsx-vanilla
     ```
 2.  **Abhängigkeiten installieren:**
     ```bash
