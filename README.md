@@ -50,7 +50,6 @@ Die Anwendung ist in zwei Hauptbereiche unterteilt: `private/` für serverseitig
     *   `setup/`: JavaScript-Dateien für DOM-Manipulation (`dom.js`), Layout-Struktur (`layout.js`), Navigationslogik (`navigation.js`) und Seitenwechselmechanismen (`pageSwitch.js`).
     *   `utils/`: Hilfs-JavaScript-Module für API-Aufrufe (`api.js`), Logout-Funktionalität (`logout.js`) und Theme-Management (`theme.js`).
 *   `tests/`: Enthält Integrations- und Performance-Tests.
-*   `scripts/`: Enthält Utility-Skripte (z.B. `remove_comments.js`, welches ich Ihnen gerade erstellt habe).
 *   `server.log`: Die Protokolldatei, in die alle Server-Logs geschrieben werden.
 *   `package.json`: Definiert Projektmetadaten und Abhängigkeiten.
 
