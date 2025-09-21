@@ -27,7 +27,7 @@ Der Standard ist ein schwarzes (Dark) Theme: Hintergrund ist schwarz, Oberfläch
 Dieses Projekt `ts` ist eine Node.js-Anwendung, die einen Backend-API-Server mit einem einfachen Frontend für die Verwaltung und Überwachung der API-Endpunkte kombiniert.
 
 ### 1. Zweck des Projekts
-Das Hauptziel des Projekts ist es, eine Plattform zum Testen und Überwachen von API-Endpunkten bereitzustellen. Es beinhaltet grundlegende Authentifizierungs-, Benutzer- und Datenverwaltungsfunktionen sowie ein robustes Logging-System.
+Das Hauptziel des Projekts ist es, eine Plattform zum Testen und Überwachen von API-Endpunkten bereitzustellen. Es beinhaltet grundlegende Authentifizierungs-, Benutzer- und Datenverwaltungsfunktionen sowie ein robustes Logging-System. Unteranderem soll es einm React-Like Syntax entsprechen.
 
 ### 2. Schlüsseltechnologien
 *   **Backend**: Node.js mit dem Express.js-Framework für den API-Server.
@@ -78,5 +78,4 @@ In unserer letzten Interaktion wurden folgende wichtige Änderungen vorgenommen:
 *   **Fehlerbehebung**: Ein `SyntaxError` in `main.js` im Zusammenhang mit einem unvollständigen Template-Literal wurde behoben.
 *   **Unnötigen Code entfernt**: Nicht verwendete Abhängigkeiten (z.B. `child_process` aus `package.json`, da es ein integriertes Node.js-Modul ist) und nicht verwendete Funktionen (z.B. `createComponent`, `$` und `$$` aus `public/setup/dom.js`) wurden entfernt.
 *   **Standardisierung des Seitenexports**: `public/pages/_main_page.js` wurde geändert, um die `App`-Funktion zu exportieren, wodurch die Konsistenz mit anderen Seitenmodulen in `public/setup/pageSwitch.js` sichergestellt wird.
-*   **Skript zum Entfernen von Kommentaren**: Ein neues Skript `scripts/remove_comments.js` wurde erstellt, um Kommentare aus `.js`- und `.ts`-Dateien zu entfernen. Es wurde auf die Verzeichnisse `private` und `public` angewendet.
 
