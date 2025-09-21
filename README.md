@@ -1,4 +1,4 @@
-# ts – API Konsole (aktueller Stand)
+# ts – API Konsole
 
 Diese Anwendung ist eine kleine Node.js/Express-App mit einer Vanilla-JS-Frontend-Oberfläche. Sie liefert statische Dateien aus, bietet mehrere API-Endpunkte und eine modulare Client-Seite mit Seitenwechsel (SPA-ähnlich).
 
