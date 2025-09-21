@@ -16,7 +16,6 @@ export function App() {
             <div class="card-description">Testen Sie verfügbare API-Endpunkte</div>
           </div>
 
-          <!-- Custom Request FIRST -->
           <div class="endpoint-group">
             <h3>Benutzerdefinierte Anfrage</h3>
             <div class="custom-request">
@@ -34,7 +33,6 @@ export function App() {
             </div>
           </div>
 
-          <!-- Quick predefined tests AFTER custom request -->
           <div class="endpoint-group">
             <h3>Systemprüfung</h3>
             <div class="endpoint-item">
@@ -43,6 +41,17 @@ export function App() {
                 <code>/api/v1/hello</code>
               </div>
               <button id="send_btn" class="btn btn-primary">Testen</button>
+            </div>
+          </div>
+
+          <div class="endpoint-group">
+            <h3>Fehler-Simulation</h3>
+            <div class="endpoint-item">
+              <div class="endpoint-info">
+                <span class="method-badge get">GET</span>
+                <code>/api/v1/meta/test-error</code>
+              </div>
+              <button id="test_error_btn" class="btn btn-danger">Fehler auslösen</button>
             </div>
           </div>
 
@@ -57,7 +66,6 @@ export function App() {
             </div>
           </div>
 
-          <!-- Discovered endpoints remain at the bottom of this card -->
           <div class="endpoint-group">
             <div style="display:flex; align-items:center; justify-content:space-between; gap: var(--space-sm);">
               <h3>Entdeckte Endpunkte</h3>
@@ -227,6 +235,7 @@ export function App() {
   const bodyInput = page.querySelector("#body_input");
   const endpointsList = page.querySelector('#endpoints_list');
   const refreshEndpointsBtn = page.querySelector('#refresh_endpoints_btn');
+  const testErrorBtn = page.querySelector("#test_error_btn");
 
   const appendOutput = (msg, type = 'info') => {
     const timestamp = new Date().toLocaleTimeString();
@@ -250,6 +259,10 @@ export function App() {
 
   sendBtn.addEventListener("click", () => {
     makeRequest('GET', '/api/v1/hello');
+  });
+
+  testErrorBtn.addEventListener("click", () => {
+    makeRequest('GET', '/api/v1/meta/test-error');
   });
 
   shutBtn.addEventListener("click", async () => {

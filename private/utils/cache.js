@@ -1,4 +1,4 @@
-// Simple in-memory cache with optional TTL
+
 const store = new Map();
 
 function set(key, value, ttlMs = 0) {

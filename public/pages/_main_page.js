@@ -1,7 +1,7 @@
 import { html } from "../setup/dom.js";
 import { get } from "../utils/api.js";
 
-export function initializeMainPage() {
+export function App() {
   let dynamicStats = {
     apiEndpoints: 0,
     activeTests: 0,
@@ -254,12 +254,12 @@ export function initializeMainPage() {
       const last = lines.slice(-4).reverse();
 
       const items = last.map(line => {
-        const m = line.match(/^\[(.*?)\]\s+(?:\[(.*?)\]\s+)?(?:\[(.*?)\]\s+)?(.*)$/);
+        const m = line.match(/^\[(.*?)\]\s+\[(.*?)\]\s+(?:\[(.*?)\]\s+)?(.*)$/);
         const t = m?.[1] || '';
-        const cat = (m?.[2] || '').toUpperCase();
-        const typ = (m?.[3] || '').toUpperCase();
+        const levelRaw = (m?.[2] || '').toUpperCase();
+        const cat = (m?.[3] || '').toUpperCase();
         const msg = m?.[4] || line;
-        const color = typ === 'ERROR' ? 'var(--error)' : 'var(--success)';
+        const color = levelRaw === 'ERROR' ? 'var(--error)' : 'var(--success)';
         return `<div class="activity-item">
           <div class="activity-time">${t}</div>
           <div class="activity-text">${cat ? `[${cat}] ` : ''}${msg}</div>

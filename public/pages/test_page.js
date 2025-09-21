@@ -587,8 +587,8 @@ export function App() {
     }
   };
 
-  // Lokalisierte Alias-Namen -> vorhandene Implementierungen
-  // Dies verbindet die in der UI angezeigten deutschen Testnamen mit den bestehenden Testfunktionen
+  
+  
   testFunctions['Datenbankverbindung'] = testFunctions['Database Connection'];
   testFunctions['Cache-Schicht'] = testFunctions['Cache Layer'];
   testFunctions['Externe API'] = testFunctions['External API'];

@@ -3,14 +3,16 @@ const fs = require("fs");
 const LOG_FILE = 'server.log';
 fs.writeFileSync(LOG_FILE, '');
 
-const originalLog = console.log;
-const originalError = console.error;
+const originalLog = console.log.bind(console);
+const originalError = console.error.bind(console);
+const originalWarn = console.warn.bind(console);
+const originalDebug = console.debug.bind(console);
 
 function formatLogMessage(type, category, ...args) {
   const timestamp = new Date().toLocaleTimeString();
   const categoryPrefix = category ? `[${category}] ` : '';
   const message = args.join(' ');
-  return `[${timestamp}] ${categoryPrefix}${type ? `[${type}] ` : ''}${message}`;
+  return `[${timestamp}] ${type ? `[${type}] ` : ''}${categoryPrefix}${message}`;
 }
 
 const createLogger = (originalConsoleMethod, type, defaultCategory = '') => (...args) => {
@@ -31,6 +33,8 @@ const customConsole = {};
 
 customConsole.log = createLogger(originalLog, '', '');
 customConsole.error = createLogger(originalError, 'ERROR', '');
+customConsole.warn = createLogger(originalWarn, 'WARN', ''); 
+customConsole.debug = createLogger(originalDebug, 'DEBUG', ''); 
 
 customConsole.log.user = createLogger(originalLog, '', 'USER');
 customConsole.log.server = createLogger(originalLog, '', 'SERVER');

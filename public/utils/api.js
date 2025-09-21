@@ -36,7 +36,7 @@ export async function request(method, url, options = {}) {
       headers: res.headers,
     };
   } catch (error) {
-    // Network or other fatal error
+    
     throw new Error(error.message || 'Network error');
   }
 }

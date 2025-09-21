@@ -13,7 +13,7 @@ export async function setupPageSwitching(root, pagesConfig, onPageChange = null)
     try {
       showLoading();
       const module = await import(config.modulePath);
-      const pageElement = config.modulePath.includes('_main_page.js') ? module.initializeMainPage() : module.App();
+      const pageElement = module.App();
       root.innerHTML = "";
       
       

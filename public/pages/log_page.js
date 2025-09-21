@@ -2,7 +2,7 @@ import { html } from "../setup/dom.js";
 
 export function App() {
   
-  // Logs werden aus dem Server ("/api/v1/logs") gelesen; keine Mock-Daten mehr.
+  
 
   const page = html`
     <div class="log-viewer">
@@ -328,7 +328,7 @@ export function App() {
   let isAutoRefreshActive = true;
 
   function formatTimestampText(text) {
-    // Der Logger liefert bereits eine formatierte Uhrzeit als Text in den Logzeilen (z. B. 03:36:34)
+    
     return text || '';
   }
 
@@ -379,22 +379,27 @@ export function App() {
   }
 
   function parseLogLine(line, index) {
-    // Erwartetes Format (siehe private/utils/logger.js):
-    // [HH:MM:SS] [CATEGORY] [ERROR]? message
-    const m = line.match(/^\[(.*?)\]\s+(?:\[(.*?)\]\s+)?(?:\[(.*?)\]\s+)?(.*)$/);
+    
+    
+    const m = line.match(/^\[(.*?)\]\s+\[(.*?)\]\s+(?:\[(.*?)\]\s+)?(.*)$/);
     if (!m) {
       return { index, timestampText: '', level: 'info', module: 'general', message: line };
     }
     const timestampText = m[1] || '';
-    const category = (m[2] || '').toLowerCase();
-    const type = (m[3] || '').toLowerCase();
+    const levelRaw = (m[2] || '').toLowerCase();
+    const category = (m[3] || '').toLowerCase();
     const message = (m[4] || '').trim();
-    const level = type === 'error' ? 'error' : 'info';
+
+    let level = 'info';
+    if (levelRaw === 'error') level = 'error';
+    else if (levelRaw === 'warn') level = 'warn';
+    else if (levelRaw === 'debug') level = 'debug';
+    
     const module = category || 'general';
     return { index, timestampText, level, module, message };
   }
 
-  // Entfernt: addNewLog und Mock-Generator; Logs werden ausschließlich vom Server geladen.
+  
   async function fetchLogs() {
     try {
       refreshBtn.disabled = true;

@@ -17,65 +17,66 @@ Der Standard ist ein schwarzes (Dark) Theme: Hintergrund ist schwarz, Oberfläch
   ```
 - Aufrufen: http://localhost:8000
 
-## Verzeichnisstruktur (vereinfacht)
-
-- `main.js` – Express-Server: Middleware, Routen, Logging, statische Auslieferung unter `/public`.
-- `public/` – Client-Code und Assets
-  - `index.html` – Einstieg, lädt `app.js`
-  - `global.css` – globales Styling (schwarzes Theme via CSS-Variablen)
-  - `app.js` – Layout/Navi, Seitenwechsel-Setup
-  - `setup/`
-    - `dom.js` – Hilfen für Template/Render/DOM-Utilities
-    - `pageSwitch.js` – Lazy-Load und Rendering der Seitenmodule
-  - `pages/`
-    - `_main_page.js` – Übersicht/Dashboard
-    - `api_page.js` – API-Konsole zum Testen von Endpunkten
-    - `log_page.js` – Log-Ansicht
-    - `test_page.js` – Demo-Tests
-  - `utils/` (neu)
-    - `api.js` – fetch-Hilfsfunktionen (request/get/post/put/del)
-    - `theme.js` – stellt sicher, dass das Dark Theme aktiv ist
-- `private/` – Server-interne Module
-  - `middleware/auth.js` – IP-Erfassung und Cookie-basierte Auth
-  - `routes/index.js` – Alle Routen (Web + API)
-  - `utils/logger.js` – Konsolen-Wrapper, schreibt in `server.log`
-
-## Theme (schwarz/dunkel)
-
-- CSS-Variablen sind in `public/global.css` definiert (schwarzer Hintergrund, dunkle Flächen, helle Schrift).
-- Der Client erzwingt beim Start ein dunkles Theme über `utils/theme.js`.
-
-## Wichtige Skripte
-
-- `npm run dev` – Startet den Express-Server (Port 8000)
-
-## Authentifizierung
-
-- Login: `GET /api/v1/login` (setzt Cookie `authenticated=true` und leitet auf `/`)
-- Logout: `GET /api/v1/logout` (löscht Cookie und leitet auf `/`)
-- Geschützte Endpunkte liefern 403 ohne gültigen Cookie.
-
-## API (Auszug)
-
-- `GET /api/v1/hello` – einfache JSON-Antwort
-- `GET /api/v1/health` – Health-Check
-- `GET /api/v1/logs` – Server-Logs (aus `server.log`)
-- `GET /api/v1/meta/endpoints` – listet registrierte API-Endpunkte
-- CRUD-Dummies unter `/api/v1/users` (in-Memory)
-- `GET /api/v1/shut` – Shutdown-Endpunkt (mit Testmodus über Header `x-test-mode: true`)
-
-## Logging
-
-Ein Konsolen-Wrapper schreibt sämtliche Logs (inkl. Kategorien) nach `server.log` und spiegelt sie in der Konsole. Kategorien u. a.: `console.log.user`, `console.log.server`, `console.log.api`, `console.error.os`, `console.error.shutdown`.
-
-## Änderungen in diesem Stand
-
-- Client-Utils hinzugefügt: `public/utils/api.js` (einheitliche Fetch-Handhabung), `public/utils/theme.js` (Dark Theme erzwingen)
-- Pages teilweise auf `utils/api` umgestellt (`_main_page.js`, `api_page.js`)
-- Sicherstellung des Dark Themes beim App-Start (Import in `public/app.js`)
-
 ## Hinweise zur Weiterentwicklung
 
 - Weitere gemeinsame Logik aus `pages/*` nach `public/utils/*` auslagern (z. B. Formatierung, UI-Helfer)
 - Falls nötig, Tests/CI hinzufügen und Linting/Formatting etablieren
+
+## Projektübersicht
+
+Dieses Projekt `ts` ist eine Node.js-Anwendung, die einen Backend-API-Server mit einem einfachen Frontend für die Verwaltung und Überwachung der API-Endpunkte kombiniert.
+
+### 1. Zweck des Projekts
+Das Hauptziel des Projekts ist es, eine Plattform zum Testen und Überwachen von API-Endpunkten bereitzustellen. Es beinhaltet grundlegende Authentifizierungs-, Benutzer- und Datenverwaltungsfunktionen sowie ein robustes Logging-System.
+
+### 2. Schlüsseltechnologien
+*   **Backend**: Node.js mit dem Express.js-Framework für den API-Server.
+*   **Frontend**: Reines HTML, CSS und JavaScript für eine clientseitige Anwendung, die die API-Konsole, die Test-Suite und die Systemprotokolle anzeigt.
+*   **Styling**: Modernes CSS mit Variablen für Design-Tokens und einer modularen Struktur.
+*   **Testing**: Jest für Unit- und Integrationstests.
+
+### 3. Dateistruktur
+Die Anwendung ist in zwei Hauptbereiche unterteilt: `private/` für serverseitige Logik und `public/` für clientseitige Assets.
+
+*   `main.js`: Der Haupteinstiegspunkt der Anwendung, der den Express-Server initialisiert und Middleware und Routen einrichtet.
+*   `private/`:
+    *   `middleware/`: Enthält Middleware-Funktionen wie Authentifizierung (`auth.js`) und IP-Erfassung.
+    *   `routes/`: Definiert API-Routen für Authentifizierung (`authRoutes.js`), Benutzer (`users.js`), Metadaten (`meta.js`) und Testdaten (`data.js`). Die `index.js` konsolidiert diese Routen.
+    *   `utils/`: Hilfsmodule für Cache-Verwaltung (`cache.js`), Endpunkt-Dienstprogramme (`endpointUtils.js`), benutzerdefiniertes Logging (`logger.js`) und Router-Dienstprogramme (`routerUtils.js`).
+*   `public/`:
+    *   `app.js`: Der Haupteinstiegspunkt der clientseitigen Anwendung, der das Layout rendert und das Seitenwechseln einrichtet.
+    *   `css/`: Enthält modularisierte CSS-Dateien (`variables.css`, `base.css`, `components.css`, `utilities.css`, `animations.css`, `layout.css`, `media.css`), die über `global.css` importiert werden.
+    *   `pages/`: Enthält JavaScript-Module für verschiedene Frontend-Seiten wie das Haupt-Dashboard (`_main_page.js`), die API-Konsole (`api_page.js`), die Protokollseite (`log_page.js`) und die Test-Suite (`test_page.js`).
+    *   `setup/`: JavaScript-Dateien für DOM-Manipulation (`dom.js`), Layout-Struktur (`layout.js`), Navigationslogik (`navigation.js`) und Seitenwechselmechanismen (`pageSwitch.js`).
+    *   `utils/`: Hilfs-JavaScript-Module für API-Aufrufe (`api.js`), Logout-Funktionalität (`logout.js`) und Theme-Management (`theme.js`).
+*   `tests/`: Enthält Integrations- und Performance-Tests.
+*   `scripts/`: Enthält Utility-Skripte (z.B. `remove_comments.js`, welches ich Ihnen gerade erstellt habe).
+*   `server.log`: Die Protokolldatei, in die alle Server-Logs geschrieben werden.
+*   `package.json`: Definiert Projektmetadaten und Abhängigkeiten.
+
+### 4. Kernfunktionalitäten
+*   **API-Endpunkte**:
+    *   `GET /api/v1/hello`: Ein einfacher Endpunkt, der eine Begrüßungsnachricht zurückgibt.
+    *   `GET /api/v1/health` & `GET /api/v1/health/full`: Endpunkte zur Überprüfung des Systemzustands.
+    *   `GET /api/v1/meta/active-tests` & `POST /api/v1/meta/active-tests`: Verwalten der Anzahl der aktiven Tests.
+    *   `GET /api/v1/meta/test-error`: Ein Endpunkt zur Simulation eines Fehlers.
+    *   `GET /api/v1/shut`: Ein Endpunkt zum Herunterfahren des Servers (mit Testmodus).
+    *   `GET /api/v1/logs`: Ruft die Serverprotokolle ab.
+    *   `GET /api/v1/login` & `GET /api/v1/logout`: Authentifizierungs-Flow.
+    *   `GET /api/v1/users`, `POST /api/v1/users`, `GET /api/v1/users/:id`, `DELETE /api/v1/users/:id`: CRUD-Operationen für Benutzer.
+    *   `GET /api/v1/data`, `DELETE /api/v1/data`: Verwaltung von Testdaten.
+*   **Benutzerdefiniertes Logging**: Das Projekt verwendet ein benutzerdefiniertes `console`-Objekt, das Log-Nachrichten mit Zeitstempel, Typ (INFO, ERROR, WARN, DEBUG) und optionaler Kategorie (z.B. USER, SERVER, API) formatiert und sie sowohl in der Konsole als auch in `server.log` ausgibt.
+*   **Clientseitige Navigation**: Das Frontend ermöglicht das nahtlose Wechseln zwischen verschiedenen Seiten (Dashboard, API-Konsole, Test-Suite, Protokolle) ohne vollständiges Neuladen der Seite.
+*   **API-Konsole**: Eine interaktive Oberfläche im Frontend, um API-Anfragen zu stellen und Antworten anzuzeigen.
+*   **Test-Suite**: Ein Frontend-Dashboard zur Ausführung und Anzeige von API-, Integrations- und Leistungstests.
+*   **Systemprotokolle**: Eine dedizierte Seite im Frontend, die Echtzeit-Serverprotokolle mit Filter- und Suchfunktionen anzeigt.
+
+### 5. Kürzliche Änderungen
+In unserer letzten Interaktion wurden folgende wichtige Änderungen vorgenommen:
+*   **CSS-Restrukturierung**: Die ursprüngliche `public/global.css`-Datei wurde in einen `public/css`-Ordner aufgeteilt, um CSS-Variablen, Basisstile, Komponenten, Utilities, Animationen, Layout und Medientypen in separate Dateien zu gliedern. Leere Verzeichnisse und nicht verwendete CSS-Importe wurden entfernt.
+*   **Logger-Korrekturen**: Es wurden Korrekturen am `private/utils/logger.js`-Modul vorgenommen, um sicherzustellen, dass die korrekten Log-Typen (z.B. DEBUG, ERROR) in den Serverprotokollen und auf der Frontend-Protokollseite korrekt angezeigt werden. Dies umfasste die Bindung nativer Konsolenmethoden und die Anpassung der Log-Parsing-Logik im Frontend.
+*   **Fehlerbehebung**: Ein `SyntaxError` in `main.js` im Zusammenhang mit einem unvollständigen Template-Literal wurde behoben.
+*   **Unnötigen Code entfernt**: Nicht verwendete Abhängigkeiten (z.B. `child_process` aus `package.json`, da es ein integriertes Node.js-Modul ist) und nicht verwendete Funktionen (z.B. `createComponent`, `$` und `$$` aus `public/setup/dom.js`) wurden entfernt.
+*   **Standardisierung des Seitenexports**: `public/pages/_main_page.js` wurde geändert, um die `App`-Funktion zu exportieren, wodurch die Konsistenz mit anderen Seitenmodulen in `public/setup/pageSwitch.js` sichergestellt wird.
+*   **Skript zum Entfernen von Kommentaren**: Ein neues Skript `scripts/remove_comments.js` wurde erstellt, um Kommentare aus `.js`- und `.ts`-Dateien zu entfernen. Es wurde auf die Verzeichnisse `private` und `public` angewendet.
 

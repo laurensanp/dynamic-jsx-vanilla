@@ -6,7 +6,9 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const { getIp } = require("./private/middleware/auth");
 const routes = require("./private/routes");
+
 require("./private/utils/logger");
+const { getAllEndpoints } = require("./private/utils/routerUtils");
 
 app.use(cors({ origin: true }));
 app.use(express.json());
@@ -16,7 +18,12 @@ app.use("/public", express.static(path.join(__dirname, "public")));
 
 app.use("/", routes);
 
-// Export the app for testing, and only start the server when run directly
+app.get("/api/v1/meta/endpoints", (req, res) => {
+  const endpoints = getAllEndpoints(routes);
+  res.json({ count: endpoints.length, endpoints });
+});
+
+
 module.exports = app;
 
 if (require.main === module) {
