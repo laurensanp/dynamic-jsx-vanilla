@@ -1,71 +1,81 @@
-# ts 🥀🎋 anwendung
+# ts – API Konsole (aktueller Stand)
 
-Dies ist eine einfache Node.js-Anwendung, die mit Express erstellt wurde. Sie dient statische Dateien aus, verarbeitet API-Anfragen und implementiert einen grundlegenden Seitenwechselmechanismus auf der Client-Seite.
+Diese Anwendung ist eine kleine Node.js/Express-App mit einer Vanilla-JS-Frontend-Oberfläche. Sie liefert statische Dateien aus, bietet mehrere API-Endpunkte und eine modulare Client-Seite mit Seitenwechsel (SPA-ähnlich).
 
-## Installation
+Der Standard ist ein schwarzes (Dark) Theme: Hintergrund ist schwarz, Oberflächen sind dunkel, Text ist hell. Das Theme wird zusätzlich beim Start im Client erzwungen.
 
-1.  **Repository klonen:**
-    ```bash
-    git clone https://github.com/laurensanp/dynamic-jsx-vanilla
-    cd dynamic-jsx-vanilla
-    ```
-2.  **Abhängigkeiten installieren:**
-    ```bash
-    npm install
-    # oder
-    yarn install
-    # oder
-    pnpm install
-    ```
+## Schnellstart
 
-## Verwendung
+- Voraussetzungen: Node.js 18+
+- Installieren:
+  ```bash
+  npm install
+  ```
+- Starten (Entwicklung):
+  ```bash
+  npm run dev
+  ```
+- Aufrufen: http://localhost:8000
 
-1.  **Entwicklungsserver starten:**
-    ```bash
-    npm run dev
-    # oder
-    yarn dev
-    ```
-2.  **Anwendung aufrufen:**
-    Öffnen Sie Ihren Webbrowser und navigieren Sie zu `http://localhost:8000` oder mittels der IP4 vom Server.
+## Verzeichnisstruktur (vereinfacht)
 
-    *   Die Hauptseite (`_main_page.js`) wird standardmäßig geladen.
-    *   Sie können zur "API-Seite" (`api_page.js`) navigieren, um mit den Endpunkten `/api/v1/hello` und `/api/v1/shut` zu interagieren.
-    *   Die "Testseite" (`test_page.js`) ist ebenfalls verfügbar.
-    *   Die "Logs"-Seite (`log_page.js`) ist verfügbar, um die Server-Konsolenausgabe in Echtzeit mit automatischer Aktualisierung anzuzeigen.
-    *   Sie können sich über `/api/v1/login` anmelden (wodurch ein authentifizierter Cookie gesetzt wird) und sich über die Schaltfläche "Logout" abmelden.
+- `main.js` – Express-Server: Middleware, Routen, Logging, statische Auslieferung unter `/public`.
+- `public/` – Client-Code und Assets
+  - `index.html` – Einstieg, lädt `app.js`
+  - `global.css` – globales Styling (schwarzes Theme via CSS-Variablen)
+  - `app.js` – Layout/Navi, Seitenwechsel-Setup
+  - `setup/`
+    - `dom.js` – Hilfen für Template/Render/DOM-Utilities
+    - `pageSwitch.js` – Lazy-Load und Rendering der Seitenmodule
+  - `pages/`
+    - `_main_page.js` – Übersicht/Dashboard
+    - `api_page.js` – API-Konsole zum Testen von Endpunkten
+    - `log_page.js` – Log-Ansicht
+    - `test_page.js` – Demo-Tests
+  - `utils/` (neu)
+    - `api.js` – fetch-Hilfsfunktionen (request/get/post/put/del)
+    - `theme.js` – stellt sicher, dass das Dark Theme aktiv ist
+- `private/` – Server-interne Module
+  - `middleware/auth.js` – IP-Erfassung und Cookie-basierte Auth
+  - `routes/index.js` – Alle Routen (Web + API)
+  - `utils/logger.js` – Konsolen-Wrapper, schreibt in `server.log`
 
-## Projektstruktur
+## Theme (schwarz/dunkel)
 
-*   `main.js`: Der Haupt-Einstiegspunkt des Node.js Express-Servers, der die Middleware, Logger und Routen importiert und verwendet.
-*   `public/`: Enthält statische Assets wie `index.html` und `global.css`, sowie clientseitige Seitenmodule wie `log_page.js`.
-*   `private/`: Enthält clientseitiges JavaScript für die Anwendungslogik sowie server-interne Module.
-    *   `private/middleware/`: Enthält anwendungsspezifische Middleware (z.B. `auth.js` für IP-Erfassung und Authentifizierung).
-    *   `private/routes/`: Definiert alle API- und Web-Routen der Anwendung (z.B. `index.js`).
-    *   `private/utils/`: Enthält Hilfsprogramme (z.B. `logger.js` für das Protokollsystem).
-    *   `private/pages/`: Enthält individuelle Seitenmodule (z.B. `_main_page.js`, `api_page.js`, `test_page.js`).
+- CSS-Variablen sind in `public/global.css` definiert (schwarzer Hintergrund, dunkle Flächen, helle Schrift).
+- Der Client erzwingt beim Start ein dunkles Theme über `utils/theme.js`.
 
-## API-Endpunkte
+## Wichtige Skripte
 
-*   `GET /`: Liefert `public/index.html` nach einer Authentifizierungsprüfung aus.
-*   `GET /api/v1/login`: Setzt einen authentifizierten Cookie und leitet zu `/` weiter.
-*   `GET /api/v1/logout`: Löscht den authentifizierten Cookie und leitet zu `/` weiter.
-*   `GET /api/v1/hello`: Gibt eine JSON-Nachricht zurück.
-*   `GET /api/v1/shut`: Gibt eine Nachricht zurück, die eine vorübergehende Deaktivierung anzeigt (Herunterfahrfunktion ist auskommentiert).
-*   `GET /api/v1/logs`: Gibt die gesammelten Server-Logs mit Zeitstempeln und Kategorien zurück.
+- `npm run dev` – Startet den Express-Server (Port 8000)
 
-## Logging-System
+## Authentifizierung
 
-Die Anwendung verwendet ein benutzerdefiniertes Protokollsystem, das alle Konsolenausgaben in die Datei `server.log` schreibt. Diese Datei wird bei jedem Serverstart geleert und ist in `.gitignore` eingetragen.
+- Login: `GET /api/v1/login` (setzt Cookie `authenticated=true` und leitet auf `/`)
+- Logout: `GET /api/v1/logout` (löscht Cookie und leitet auf `/`)
+- Geschützte Endpunkte liefern 403 ohne gültigen Cookie.
 
-Jeder Protokolleintrag enthält einen Zeitstempel und eine optionale Kategorie für eine bessere Organisation. Die Protokolle werden sowohl im Terminal als auch auf der "Logs"-Seite in der Anwendung angezeigt.
+## API (Auszug)
 
-Verfügbare kategorisierte Protokollmethoden:
-*   `console.log.user('Nachricht')`: Für benutzerbezogene Aktionen (z.B. Anmeldung, Abmeldung, Seitenzugriffe).
-*   `console.log.server('Nachricht')`: Für Serverereignisse (z.B. Serverstart).
-*   `console.log.api('Nachricht')`: Für API-Anfragen.
-*   `console.error.os('Fehlernachricht')`: Für betriebssystembezogene Fehler.
-*   `console.error.shutdown('Fehlernachricht')`: Für Fehler im Zusammenhang mit dem Herunterfahren des Servers.
+- `GET /api/v1/hello` – einfache JSON-Antwort
+- `GET /api/v1/health` – Health-Check
+- `GET /api/v1/logs` – Server-Logs (aus `server.log`)
+- `GET /api/v1/meta/endpoints` – listet registrierte API-Endpunkte
+- CRUD-Dummies unter `/api/v1/users` (in-Memory)
+- `GET /api/v1/shut` – Shutdown-Endpunkt (mit Testmodus über Header `x-test-mode: true`)
 
-Ein direkter Aufruf von `console.log('Nachricht')` wird ohne zusätzliche Kategorie protokolliert, während `console.error('Fehlernachricht')` die Kategorie `[ERROR]` erhält.
+## Logging
+
+Ein Konsolen-Wrapper schreibt sämtliche Logs (inkl. Kategorien) nach `server.log` und spiegelt sie in der Konsole. Kategorien u. a.: `console.log.user`, `console.log.server`, `console.log.api`, `console.error.os`, `console.error.shutdown`.
+
+## Änderungen in diesem Stand
+
+- Client-Utils hinzugefügt: `public/utils/api.js` (einheitliche Fetch-Handhabung), `public/utils/theme.js` (Dark Theme erzwingen)
+- Pages teilweise auf `utils/api` umgestellt (`_main_page.js`, `api_page.js`)
+- Sicherstellung des Dark Themes beim App-Start (Import in `public/app.js`)
+
+## Hinweise zur Weiterentwicklung
+
+- Weitere gemeinsame Logik aus `pages/*` nach `public/utils/*` auslagern (z. B. Formatierung, UI-Helfer)
+- Falls nötig, Tests/CI hinzufügen und Linting/Formatting etablieren
 

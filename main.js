@@ -16,6 +16,11 @@ app.use("/public", express.static(path.join(__dirname, "public")));
 
 app.use("/", routes);
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log.server(`running on http://localhost:${PORT}`);
-});
+// Export the app for testing, and only start the server when run directly
+module.exports = app;
+
+if (require.main === module) {
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log.server(`running on http://localhost:${PORT}`);
+  });
+}
