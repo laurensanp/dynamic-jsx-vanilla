@@ -16,7 +16,7 @@ describe('Leistungstests', () => {
   });
 
   test('Gleichzeitige Benutzer (100)', async () => {
-    const N = 100;
+    const N = 2000;
     const calls = Array.from({ length: N }, () => auth(request(app).get('/api/v1/hello')));
     const results = await Promise.all(calls);
     const okCount = results.filter(r => r.status === 200).length;
@@ -25,13 +25,13 @@ describe('Leistungstests', () => {
 
   test('Speichernutzung', async () => {
     const before = process.memoryUsage().heapUsed;
-    const calls = Array.from({ length: 10 }, () => auth(request(app).get('/api/v1/logs')));
+    const calls = Array.from({ length: 1000 }, () => auth(request(app).get('/api/v1/logs')));
     const res = await Promise.all(calls);
     expect(res.every(r => r.status === 200)).toBe(true);
     const after = process.memoryUsage().heapUsed;
 
     const deltaMB = (after - before) / (1024 * 1024);
     // Ensure no suspicious memory growth from repeated log reads
-    expect(deltaMB).toBeLessThan(20);
+    expect(deltaMB).toBeLessThan(200);
   });
 });

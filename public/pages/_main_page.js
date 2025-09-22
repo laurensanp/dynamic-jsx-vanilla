@@ -4,16 +4,16 @@ import { get } from "../utils/api.js";
 export function App() {
   let dynamicStats = {
     apiEndpoints: 0,
-    activeTests: 0,
     recentLogs: 0,
-    systemStatus: 'Startet…'
+    systemStatus: 'Startet…',
+    logFileSize: 0
   };
 
   const getStats = () => [
     { id: 'api-endpoints', label: 'API-Endpunkte', value: dynamicStats.apiEndpoints, icon: '📡', color: 'var(--primary)' },
-    { id: 'active-tests', label: 'Aktive Tests', value: dynamicStats.activeTests, icon: '✅', color: 'var(--success)' },
     { id: 'recent-logs', label: 'Neueste Protokolle', value: dynamicStats.recentLogs, icon: '📋', color: 'var(--info)' },
-    { id: 'system-status', label: 'Systemstatus', value: dynamicStats.systemStatus, icon: '🟢', color: 'var(--success)' }
+    { id: 'system-status', label: 'Systemstatus', value: dynamicStats.systemStatus, icon: '🟢', color: 'var(--success)' },
+    { id: 'log-file-size', label: 'Log Dateigröße', value: dynamicStats.logFileSize, icon: '📦', color: 'var(--warning)' }
   ];
 
   const pageContent = html`
@@ -198,22 +198,6 @@ export function App() {
     }
   };
 
-  const updateActiveTests = async () => {
-    try {
-      const res = await get('/api/v1/meta/active-tests');
-      if (res.ok) {
-        const data = res.data;
-        dynamicStats.activeTests = typeof data.active === 'number' ? data.active : 0;
-      } else {
-        console.warn('Fehler beim Abrufen der aktiven Tests-Metadaten:', res.status, res.statusText);
-        dynamicStats.activeTests = 0;
-      }
-    } catch (error) {
-      console.warn('Fehler beim Abrufen der aktiven Tests-Metadaten:', error);
-      dynamicStats.activeTests = 0;
-    }
-  };
-
   async function updateHealthCard() {
     try {
       const res = await get('/api/v1/health/full');
@@ -226,7 +210,7 @@ export function App() {
         const color = ok ? 'var(--success)' : (message?.toLowerCase().includes('warn') || message?.toLowerCase().includes('degrad') ? 'var(--warning)' : 'var(--error)');
         dot.style.background = color;
         if (key === 'api') txt.textContent = ok ? 'Gut' : 'Schlecht';
-        else if (key === 'db') txt.textContent = ok ? 'Verbunden' : 'Nicht verbunden';
+        else if (key === 'db') txt.textContent = ok ? 'Warnung' : 'Nicht verbunden';
         else if (key === 'cache') txt.textContent = ok ? 'Gut' : 'Warnung';
         else if (key === 'monitor') txt.textContent = ok ? 'Aktiv' : 'Inaktiv';
       };
@@ -273,24 +257,40 @@ export function App() {
     }
   }
 
+  const fetchLogFileSize = async () => {
+    try {
+      const res = await get('/api/v1/meta/log-size');
+      if (res.ok) {
+        const data = res.data;
+        dynamicStats.logFileSize = typeof data.size === 'number' ? data.size : 0;
+      } else {
+        console.warn('Fehler beim Abrufen der Log-Dateigröße-Metadaten:', res.status, res.statusText);
+        dynamicStats.logFileSize = 0;
+      }
+    } catch (error) {
+      console.warn('Fehler beim Abrufen der Log-Dateigröße-Metadaten:', error);
+      dynamicStats.logFileSize = 0;
+    }
+  };
+
   const updateAllStats = async () => {
     await Promise.all([
       fetchApiEndpoints(),
       fetchLogsCount(),
       checkSystemStatus(),
-      updateActiveTests(),
       updateHealthCard(),
-      updateActivityFeed()
+      updateActivityFeed(),
+      fetchLogFileSize()
     ]);
 
     updateStat('api-endpoints', dynamicStats.apiEndpoints);
-    updateStat('active-tests', dynamicStats.activeTests);
     updateStat('recent-logs', dynamicStats.recentLogs);
     updateStat('system-status', dynamicStats.systemStatus);
+    updateStat('log-file-size', `${dynamicStats.logFileSize} bytes`);
   };
 
   setTimeout(() => { updateAllStats(); }, 500);
-  const statsInterval = setInterval(updateAllStats, 30000);
+  const statsInterval = setInterval(updateAllStats, 5000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) updateAllStats(); });
   window.addEventListener('beforeunload', () => { if (statsInterval) clearInterval(statsInterval); });
 

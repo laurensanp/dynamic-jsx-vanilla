@@ -31,7 +31,7 @@ export const layout = html`
     </nav>
   </div>
   
-  <main class="container flex-1">
+  <main class="flex-1 content-area">
     <div id="page-content" class="fade-in"></div>
   </main>
 `;

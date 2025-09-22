@@ -11,7 +11,7 @@ require("./private/utils/logger");
 const { getAllEndpoints } = require("./private/utils/routerUtils");
 
 app.use(cors({ origin: true }));
-app.use(express.json());
+app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
 app.use(getIp);
 app.use("/public", express.static(path.join(__dirname, "public")));
@@ -22,7 +22,6 @@ app.get("/api/v1/meta/endpoints", (req, res) => {
   const endpoints = getAllEndpoints(routes);
   res.json({ count: endpoints.length, endpoints });
 });
-
 
 module.exports = app;
 

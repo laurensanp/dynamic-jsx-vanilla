@@ -56,4 +56,21 @@ describe('Integrationstests', () => {
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('message');
   });
+
+  test('Concurrent User Creation (integration)', async () => {
+    const NUM_USERS = 50;
+    const createUsersPromises = [];
+    for (let i = 0; i < NUM_USERS; i++) {
+      const testUser = {
+        name: `Integration User ${i}`,
+        email: `integration_user_${i}@example.com`
+      };
+      createUsersPromises.push(auth(request(app).post('/api/v1/users').send(testUser)));
+    }
+    const createResponses = await Promise.all(createUsersPromises);
+    expect(createResponses.filter(res => res.status === 201).length).toBe(NUM_USERS);
+
+    // Optional: Clean up created users (requires a way to get all user IDs)
+    // For now, we'll just check creation succeeded.
+  });
 });

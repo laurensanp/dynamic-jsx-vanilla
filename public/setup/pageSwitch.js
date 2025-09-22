@@ -13,8 +13,8 @@ export async function setupPageSwitching(root, pagesConfig, onPageChange = null)
     try {
       showLoading();
       const module = await import(config.modulePath);
-      const pageElement = module.App();
       root.innerHTML = "";
+      const pageElement = module.App();
       
       
       if (pageElement instanceof DocumentFragment) {

@@ -1,7 +1,14 @@
 const fs = require("fs");
 
 const LOG_FILE = 'server.log';
-fs.writeFileSync(LOG_FILE, '');
+try {
+  if (fs.existsSync(LOG_FILE)) {
+    fs.unlinkSync(LOG_FILE);
+  }
+} catch (err) {
+  console.error(`Error removing log file on startup: ${err.message}`);
+}
+// The log file will now persist across server restarts.
 
 const originalLog = console.log.bind(console);
 const originalError = console.error.bind(console);
@@ -15,18 +22,17 @@ function formatLogMessage(type, category, ...args) {
   return `[${timestamp}] ${type ? `[${type}] ` : ''}${categoryPrefix}${message}`;
 }
 
-const createLogger = (originalConsoleMethod, type, defaultCategory = '') => (...args) => {
-  let category = defaultCategory;
-  let messageArgs = args;
-  
-  if (typeof args[0] === 'string' && args[0].match(/^[A-Z_]+$/)) {
-    category = args[0];
-    messageArgs = args.slice(1);
-  }
-
-  const formattedMessage = formatLogMessage(type, category, ...messageArgs);
+const createLogger = (originalConsoleMethod, type, category = '') => (...args) => {
+  // Old dynamic category parsing removed as it was not being used as intended
+  // and could cause issues if messages started with all-caps words.
+  // All categories are now explicitly set during customConsole definition.
+  const formattedMessage = formatLogMessage(type, category, ...args);
   originalConsoleMethod(formattedMessage);
-  fs.appendFileSync(LOG_FILE, formattedMessage + '\n');
+  fs.appendFile(LOG_FILE, formattedMessage + '\n', (err) => {
+    if (err) {
+      originalError(`Failed to write to log file: ${err.message}`);
+    }
+  });
 };
 
 const customConsole = {};

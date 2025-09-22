@@ -42,18 +42,7 @@ export function App() {
 
         <div class="log-actions">
           <input type="text" id="search_input" class="log-search" placeholder="Protokolle durchsuchen..." />
-          <button id="refresh_btn" class="btn btn-primary">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-            </svg>
-            Aktualisieren
-          </button>
-          <button id="auto_refresh_btn" class="btn btn-secondary" data-active="true">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            Automatisch aktualisieren
-          </button>
+          
           <button id="clear_btn" class="btn btn-ghost">Leeren</button>
           <button id="export_btn" class="btn btn-ghost">Exportieren</button>
         </div>
@@ -91,8 +80,17 @@ export function App() {
     </div>
 
     <style>
+      #page-content {
+        max-width: 1600px;
+        margin: 0 auto;
+      }
+
       .log-viewer {
         padding: var(--space-xl) 0;
+        max-width: none;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
       }
       
       .log-header {
@@ -189,6 +187,7 @@ export function App() {
       
       .log-container {
         margin-bottom: var(--space-lg);
+        width: 100%;
       }
       
       .card-header {
@@ -230,7 +229,7 @@ export function App() {
         overflow-y: auto;
         background: rgba(15, 15, 35, 0.8);
         border-radius: var(--radius-md);
-        padding: var(--space-md);
+        padding: var(--space-lg);
       }
       
       .log-entry {
@@ -239,7 +238,6 @@ export function App() {
         margin-bottom: var(--space-xs);
         padding: var(--space-xs) 0;
         border-left: 3px solid transparent;
-        padding-left: var(--space-sm);
       }
       
       .log-entry.error { border-left-color: var(--error); }
@@ -311,8 +309,6 @@ export function App() {
   const levelFilter = page.querySelector('#level_filter');
   const moduleFilter = page.querySelector('#module_filter');
   const searchInput = page.querySelector('#search_input');
-  const refreshBtn = page.querySelector('#refresh_btn');
-  const autoRefreshBtn = page.querySelector('#auto_refresh_btn');
   const clearBtn = page.querySelector('#clear_btn');
   const exportBtn = page.querySelector('#export_btn');
   
@@ -324,8 +320,7 @@ export function App() {
 
   let logs = [];
   let filteredLogs = [];
-  let autoRefreshInterval = null;
-  let isAutoRefreshActive = true;
+  let logsInterval = null;
 
   function formatTimestampText(text) {
     
@@ -402,9 +397,6 @@ export function App() {
   
   async function fetchLogs() {
     try {
-      refreshBtn.disabled = true;
-      refreshBtn.innerHTML = '<div class="loading" style="width: 16px; height: 16px;"></div> Wird aktualisiert...';
-
       const res = await fetch('/api/v1/logs', { credentials: 'same-origin', cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
@@ -413,47 +405,28 @@ export function App() {
         if (logs.length > 1000) logs = logs.slice(-1000).map((l, i) => ({ ...l, index: i }));
         filterLogs();
       }
-
-      refreshBtn.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-        </svg>
-        Aktualisieren
-      `;
     } catch (err) {
       console.error('Fehler beim Abrufen der Protokolle:', err);
-    } finally {
-      refreshBtn.disabled = false;
     }
   }
 
-  function toggleAutoRefresh() {
-    isAutoRefreshActive = !isAutoRefreshActive;
-    autoRefreshBtn.dataset.active = isAutoRefreshActive;
-    
-    if (isAutoRefreshActive) {
-      autoRefreshInterval = setInterval(() => {
-        fetchLogs();
-      }, 5000);
-    } else {
-      if (autoRefreshInterval) {
-        clearInterval(autoRefreshInterval);
-        autoRefreshInterval = null;
-      }
-    }
-  }
-
-  
   levelFilter.addEventListener('change', filterLogs);
   moduleFilter.addEventListener('change', filterLogs);
   searchInput.addEventListener('input', filterLogs);
   
-  refreshBtn.addEventListener('click', fetchLogs);
-  autoRefreshBtn.addEventListener('click', toggleAutoRefresh);
-  
-  clearBtn.addEventListener('click', () => {
-    logs = [];
-    filterLogs();
+  clearBtn.addEventListener('click', async () => {
+    try {
+      const res = await fetch('/api/v1/logs', { method: 'DELETE', credentials: 'same-origin' });
+      if (res.ok) {
+        logs = [];
+        filterLogs();
+        console.log('Server logs cleared.');
+      } else {
+        console.error('Failed to clear server logs:', res.statusText);
+      }
+    } catch (err) {
+      console.error('Error clearing server logs:', err);
+    }
   });
   
   exportBtn.addEventListener('click', () => {
@@ -470,13 +443,12 @@ export function App() {
     URL.revokeObjectURL(url);
   });
 
-  
-  fetchLogs();
-  toggleAutoRefresh(); 
+  fetchLogs(); // Initial fetch
+  logsInterval = setInterval(fetchLogs, 1000); // Continuous 1-second interval
   
   page.addEventListener('unload', () => {
-    if (autoRefreshInterval) {
-      clearInterval(autoRefreshInterval);
+    if (logsInterval) {
+      clearInterval(logsInterval);
     }
   });
 

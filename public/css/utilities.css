@@ -1,9 +1,8 @@
 /* public/css/utilities.css */
 
 .container {
-  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 var(--space-lg);
+  padding: 0;
 }
 
 .flex {

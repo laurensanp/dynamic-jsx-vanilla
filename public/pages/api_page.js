@@ -87,6 +87,11 @@ export function App() {
     </div>
 
     <style>
+      #page-content {
+        max-width: 1600px;
+        margin: 0 auto;
+      }
+
       .api-console {
         padding: var(--space-xl) 0;
       }
