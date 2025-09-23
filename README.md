@@ -204,3 +204,27 @@ main.js (Hauptserver-Einstiegspunkt für die "ts – API Konsole")
 └── Startet den HTTP-Server (Auf http://localhost:8000, protokolliert mit console.log.server)
 ```
 
+# Eine neue Seite einrichten
+
+Dies ist eine vereinfachte Schritt-für-Schritt-Anleitung, wie Sie eine neue Seite in diesem Projekt einrichten:
+
+1.  **Dateien für die neue Seite erstellen:**
+    *   Erstellen Sie einen neuen Ordner für Ihre Seite unter `public/pages/` (z.B. `public/pages/meine_neue_seite`).
+    *   In diesem Ordner erstellen Sie zwei Dateien: `meine_neue_seite.js` (für die Logik der Seite) und `meine_neue_seite.css` (für das Aussehen der Seite).
+    *   (Optional): Wenn Ihre Seite mit dem Server spricht oder Hilfsfunktionen benötigt, können Sie `meine_neue_seiteService.js` und `meine_neue_seiteUtils.js` erstellen.
+
+2.  **Einstellungen im Frontend anpassen:**
+    *   Erstellen Sie eine neue Einstellungsdatei unter `public/settings/` namens `meine_neue_seiteSettings.js`.
+    *   **Datei `public/settings/layoutSettings.js` aktualisieren**: Fügen Sie Ihre neue Seite zur Liste `NAV_LINKS` hinzu. Geben Sie eine `id` (z.B. `"meine_neue_seite_btn"`), den `text` (Name der Seite) und einen `iconPath` (SVG-Pfad für das Icon) an.
+    *   **Datei `public/settings/appSettings.js` aktualisieren**: Fügen Sie ein Konfigurationsobjekt für Ihre neue Seite in das `PAGES_CONFIG`-Array ein. Achten Sie darauf, dass die `buttonId` mit der `id` aus `layoutSettings.js` übereinstimmt, und geben Sie den `modulePath`, `cssPath` und `title` an.
+
+3.  **Navigation und Routen im Frontend einbinden:**
+    *   **Datei `public/setup/navigation.js` aktualisieren**: Fügen Sie Code hinzu, um den Navigationsknopf Ihrer neuen Seite anzuzeigen und zu markieren, wenn die Seite aktiv ist.
+    *   **Datei `public/setup/pageSwitch.js` prüfen**: Diese Datei sollte bereits so eingerichtet sein, dass sie Seiten basierend auf den Einstellungen in `appSettings.js` wechselt. Stellen Sie sicher, dass die `buttonId` Ihrer neuen Seite zu einem tatsächlichen HTML-Knopf im Layout passt.
+
+4.  **Backend-Anbindung (falls nötig):**
+    *   Wenn Ihre Seite mit dem Server kommunizieren muss, erstellen oder ändern Sie Dateien unter `private/routes/` (z.B. `meine_neue_seiteRoutes.js`), um neue API-Endpunkte zu definieren.
+    *   Schreiben Sie die zugehörige Server-Logik in Dateien unter `private/utils/` (z.B. `meine_neue_seiteUtils.js`).
+    *   Registrieren Sie neue Backend-Endpunkte in `private/settings/serverEndpointSettings.js`.
+    *   Passen Sie gegebenenfalls Middleware unter `private/middleware/` an.
+

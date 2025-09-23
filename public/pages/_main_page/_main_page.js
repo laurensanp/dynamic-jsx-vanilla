@@ -1,5 +1,4 @@
 import { html } from "../../setup/dom.js";
-import { updateStat } from "./dashboardUtils.js";
 import { updateAllStats } from "./dashboardService.js";
 import * as MainPageSettings from "../../settings/_main_pageSettings.js";
 

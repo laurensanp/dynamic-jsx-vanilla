@@ -1,0 +1,8 @@
+.page-page {
+    padding: var(--space-xl) 0;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: var(--space-2xl);
+}
