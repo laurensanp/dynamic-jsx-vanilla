@@ -1,0 +1,1 @@
+export const API_CONSOLE_TEXTAREA_DEFAULT_ROWS = 4;

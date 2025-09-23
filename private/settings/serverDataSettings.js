@@ -1,0 +1,11 @@
+export const DATA_BASE_ENDPOINT = "/api/v1/data";
+export const DATA_ID_ENDPOINT = "/api/v1/data/:id";
+export const DATA_GET_ERROR_MESSAGE = "Failed to get test data";
+export const DATA_DELETED_SUCCESS_MESSAGE = "Data deleted successfully";
+export const DATA_DELETE_ERROR_MESSAGE = "Failed to delete data";
+export const DATA_RECORD_NOT_FOUND_MESSAGE = "Data record not found";
+export const DATA_VALUE_CONTENT_REQUIRED_MESSAGE = "Value or content is required";
+export const DATA_CREATED_SUCCESS_MESSAGE = "Data created successfully";
+export const DATA_CREATE_ERROR_MESSAGE = "Failed to create data";
+export const DATA_UPDATED_SUCCESS_MESSAGE = "Data updated successfully";
+export const DATA_UPDATE_ERROR_MESSAGE = "Failed to update data";

@@ -1,0 +1,224 @@
+/* Styles for the Log Viewer page */
+
+#page-content {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.log-viewer {
+  padding: var(--space-xl) 0;
+  max-width: none;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.log-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+}
+
+.log-header h1 {
+  margin-bottom: var(--space-sm);
+}
+
+.log-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.log-filters {
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.filter-group label {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.filter-group select,
+.filter-group input {
+  min-width: 120px;
+}
+
+.log-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.log-actions .log-search {
+  min-width: 220px;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.log-stats {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.stat-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+}
+
+.stat-badge.error { background: rgba(245, 101, 101, 0.1); color: var(--error); }
+.stat-badge.warning { background: rgba(237, 137, 54, 0.1); color: var(--warning); }
+.stat-badge.info { background: rgba(66, 153, 225, 0.1); color: var(--info); }
+.stat-badge.debug { background: rgba(160, 174, 192, 0.1); color: var(--text-muted); }
+
+.stat-count {
+  font-weight: 700;
+  font-size: var(--font-size-lg);
+}
+
+.stat-label {
+  text-transform: uppercase;
+  font-size: var(--font-size-xs);
+  opacity: 0.8;
+}
+
+.log-container {
+  margin-bottom: var(--space-lg);
+  width: 100%;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.log-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.status-indicator.active {
+  background: var(--success);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.log-output {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+  height: 400px;
+  overflow-y: auto;
+  background: rgba(15, 15, 35, 0.8);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+}
+
+.log-entry {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xs);
+  padding: var(--space-xs) 0;
+  border-left: 3px solid transparent;
+}
+
+.log-entry.error { border-left-color: var(--error); }
+.log-entry.warn { border-left-color: var(--warning); }
+.log-entry.info { border-left-color: var(--info); }
+.log-entry.debug { border-left-color: var(--text-muted); }
+
+.log-timestamp {
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.log-level {
+  min-width: 50px;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: var(--font-size-xs);
+  flex-shrink: 0;
+}
+
+.log-level.error { color: var(--error); }
+.log-level.warn { color: var(--warning); }
+.log-level.info { color: var(--info); }
+.log-level.debug { color: var(--text-muted); }
+
+.log-module {
+  color: var(--text-accent);
+  font-size: var(--font-size-xs);
+  min-width: 60px;
+  flex-shrink: 0;
+}
+
+.log-message {
+  flex: 1;
+  word-break: break-word;
+}
+
+.btn[data-active="true"] {
+  background: var(--primary);
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .log-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .log-filters,
+  .log-actions {
+    justify-content: center;
+  }
+  
+  .log-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .log-entry {
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+}

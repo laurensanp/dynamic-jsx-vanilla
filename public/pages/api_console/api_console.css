@@ -1,0 +1,142 @@
+/* Styles for the API Console page */
+
+#page-content {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.api-console {
+  padding: var(--space-xl) 0;
+}
+
+.api-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+}
+
+.api-header h1 {
+  margin-bottom: var(--space-sm);
+}
+
+.api-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xl);
+  align-items: start; 
+}
+
+
+.api-output { 
+  align-self: start; 
+}
+
+.endpoint-group {
+  margin-bottom: var(--space-lg);
+}
+
+.endpoint-group h3 {
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--space-md);
+  color: var(--text-secondary);
+}
+
+.endpoint-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-sm);
+}
+
+.endpoint-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.method-badge {
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.method-badge.get { background: var(--success); color: white; }
+.method-badge.post { background: var(--primary); color: white; }
+.method-badge.put { background: var(--warning); color: white; }
+.method-badge.delete { background: var(--error); color: white; }
+
+.custom-request {
+  padding: var(--space-md);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.endpoints-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.endpoint-actions {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
+}
+
+.request-builder {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.method-select {
+  min-width: 80px;
+}
+
+.url-input {
+  flex: 1;
+}
+
+.api-response {
+  font-family: var(--font-mono);
+  min-height: 300px;
+  background: rgba(15, 15, 35, 0.8);
+}
+
+.btn-sm {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--font-size-xs);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-header .card-title {
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .api-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .endpoint-item {
+    flex-direction: column;
+    gap: var(--space-sm);
+    align-items: stretch;
+  }
+  
+  .request-builder {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

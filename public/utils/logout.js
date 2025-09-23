@@ -1,6 +1,8 @@
+import { LOGOUT_CONFIRM_MESSAGE, LOGOUT_ENDPOINT, LOGOUT_REDIRECT_URL } from "../settings/authSettings.js";
+
 export function setupLogout(logoutButton) {
   logoutButton.addEventListener("click", async (e) => {
-    if (!confirm("Möchten Sie sich wirklich abmelden?")) return;
+    if (!confirm(LOGOUT_CONFIRM_MESSAGE)) return;
     
     const originalText = logoutButton.innerHTML;
     logoutButton.innerHTML = `
@@ -10,8 +12,8 @@ export function setupLogout(logoutButton) {
     logoutButton.disabled = true;
     
     try {
-      await fetch("/api/v1/logout");
-      window.location.href = "/";
+      await fetch(LOGOUT_ENDPOINT);
+      window.location.href = LOGOUT_REDIRECT_URL;
     } catch (error) {
       console.error("Logout failed:", error);
       logoutButton.innerHTML = originalText;

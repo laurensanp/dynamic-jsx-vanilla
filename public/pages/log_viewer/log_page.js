@@ -1,9 +1,11 @@
-import { html } from "../setup/dom.js";
+import { html } from "../../setup/dom.js";
+import { tailLogs, filterLogs, renderLogs, updateStats, formatTimestampText, downloadLogs } from "./logUtils.js";
+import { fetchLogs, clearServerLogs } from "./logService.js";
+import { LOG_REFRESH_INTERVAL_MS, LOG_MAX_LINES } from "../../settings/log_viewerSettings.js";
 
 export function App() {
   
   
-
   const page = html`
     <div class="log-viewer">
       <div class="log-header">
@@ -79,6 +81,7 @@ export function App() {
       </div>
     </div>
 
+    <link rel="stylesheet" href="/public/pages/log_viewer/log_viewer.css">
     <style>
       #page-content {
         max-width: 1600px;
@@ -305,152 +308,64 @@ export function App() {
     </style>
   `;
 
-  const logOutput = page.querySelector('#log_output');
-  const levelFilter = page.querySelector('#level_filter');
-  const moduleFilter = page.querySelector('#module_filter');
-  const searchInput = page.querySelector('#search_input');
-  const clearBtn = page.querySelector('#clear_btn');
-  const exportBtn = page.querySelector('#export_btn');
-  
-  
-  const errorCount = page.querySelector('#error_count');
-  const warnCount = page.querySelector('#warn_count');
-  const infoCount = page.querySelector('#info_count');
-  const debugCount = page.querySelector('#debug_count');
+  return page;
+}
+
+export function onMount(rootElement) {
+  const logOutput = rootElement.querySelector('#log_output');
+  const levelFilter = rootElement.querySelector('#level_filter');
+  const moduleFilter = rootElement.querySelector('#module_filter');
+  const searchInput = rootElement.querySelector('#search_input');
+  const clearBtn = rootElement.querySelector('#clear_btn');
+  const exportBtn = rootElement.querySelector('#export_btn');
+
+  const errorCount = rootElement.querySelector('#error_count');
+  const warnCount = rootElement.querySelector('#warn_count');
+  const infoCount = rootElement.querySelector('#info_count');
+  const debugCount = rootElement.querySelector('#debug_count');
 
   let logs = [];
   let filteredLogs = [];
   let logsInterval = null;
 
-  function formatTimestampText(text) {
-    
-    return text || '';
-  }
+  const startLogRefresh = (interval) => {
+    if (logsInterval) clearInterval(logsInterval);
+    logsInterval = setInterval(fetchLogsProxy, interval);
+  };
 
-  function updateStats() {
-    const stats = filteredLogs.reduce((acc, log) => {
-      acc[log.level] = (acc[log.level] || 0) + 1;
-      return acc;
-    }, {});
-    
-    errorCount.textContent = stats.error || 0;
-    warnCount.textContent = stats.warn || 0;
-    infoCount.textContent = stats.info || 0;
-    debugCount.textContent = stats.debug || 0;
-  }
-
-  function filterLogs() {
-    const levelValue = levelFilter.value;
-    const moduleValue = moduleFilter.value;
-    const searchValue = searchInput.value.toLowerCase();
-
-    filteredLogs = logs.filter(log => {
-      const levelMatch = levelValue === 'all' || log.level === levelValue;
-      const moduleMatch = moduleValue === 'all' || log.module === moduleValue;
-      const searchMatch = !searchValue || 
-        log.message.toLowerCase().includes(searchValue) ||
-        log.module.toLowerCase().includes(searchValue);
-      
-      return levelMatch && moduleMatch && searchMatch;
-    });
-
-    renderLogs();
-    updateStats();
-  }
-
-  function renderLogs() {
-    const logsHTML = filteredLogs
-      .sort((a, b) => b.index - a.index)
-      .map(log => `
-        <div class="log-entry ${log.level}">
-          <span class="log-timestamp">${formatTimestampText(log.timestampText)}</span>
-          <span class="log-level ${log.level}">${log.level}</span>
-          <span class="log-module">[${log.module}]</span>
-          <span class="log-message">${log.message}</span>
-        </div>
-      `).join('');
-
-    logOutput.innerHTML = logsHTML || '<div class="log-entry info"><span class="log-message">Keine Protokolle entsprechen den aktuellen Filtern</span></div>';
-  }
-
-  function parseLogLine(line, index) {
-    
-    
-    const m = line.match(/^\[(.*?)\]\s+\[(.*?)\]\s+(?:\[(.*?)\]\s+)?(.*)$/);
-    if (!m) {
-      return { index, timestampText: '', level: 'info', module: 'general', message: line };
+  const stopLogRefresh = () => {
+    if (logsInterval) {
+      clearInterval(logsInterval);
+      logsInterval = null;
     }
-    const timestampText = m[1] || '';
-    const levelRaw = (m[2] || '').toLowerCase();
-    const category = (m[3] || '').toLowerCase();
-    const message = (m[4] || '').trim();
+  };
 
-    let level = 'info';
-    if (levelRaw === 'error') level = 'error';
-    else if (levelRaw === 'warn') level = 'warn';
-    else if (levelRaw === 'debug') level = 'debug';
-    
-    const module = category || 'general';
-    return { index, timestampText, level, module, message };
-  }
+  const filterLogsProxy = () => {
+    filteredLogs = filterLogs(logs, logOutput, levelFilter, moduleFilter, searchInput, errorCount, warnCount, infoCount, debugCount, renderLogs);
+  };
 
-  
-  async function fetchLogs() {
-    try {
-      const res = await fetch('/api/v1/logs', { credentials: 'same-origin', cache: 'no-store' });
-      if (res.ok) {
-        const data = await res.json();
-        const lines = Array.isArray(data.logs) ? data.logs : [];
-        logs = lines.map((line, idx) => parseLogLine(line, idx));
-        if (logs.length > 1000) logs = logs.slice(-1000).map((l, i) => ({ ...l, index: i }));
-        filterLogs();
-      }
-    } catch (err) {
-      console.error('Fehler beim Abrufen der Protokolle:', err);
-    }
-  }
+  const fetchLogsProxy = async () => {
+    logs = await fetchLogs(logs, filterLogsProxy);
+  };
 
-  levelFilter.addEventListener('change', filterLogs);
-  moduleFilter.addEventListener('change', filterLogs);
-  searchInput.addEventListener('input', filterLogs);
+  levelFilter.addEventListener('change', filterLogsProxy);
+  moduleFilter.addEventListener('change', filterLogsProxy);
+  searchInput.addEventListener('input', filterLogsProxy);
   
   clearBtn.addEventListener('click', async () => {
-    try {
-      const res = await fetch('/api/v1/logs', { method: 'DELETE', credentials: 'same-origin' });
-      if (res.ok) {
-        logs = [];
-        filterLogs();
-        console.log('Server logs cleared.');
-      } else {
-        console.error('Failed to clear server logs:', res.statusText);
-      }
-    } catch (err) {
-      console.error('Error clearing server logs:', err);
-    }
+    logs = await clearServerLogs(logs, filterLogsProxy);
   });
   
   exportBtn.addEventListener('click', () => {
-    const logData = filteredLogs.map(log => 
-      `${formatTimestamp(log.timestamp)} [${log.level.toUpperCase()}] [${log.module}] ${log.message}`
-    ).join('\n');
-    
-    const blob = new Blob([logData], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `logs-${new Date().toISOString().split('T')[0]}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadLogs(filteredLogs);
   });
 
-  fetchLogs(); // Initial fetch
-  logsInterval = setInterval(fetchLogs, 1000); // Continuous 1-second interval
+  fetchLogsProxy(); // Initial fetch
+  logsInterval = setInterval(fetchLogsProxy, LOG_REFRESH_INTERVAL_MS); // Continuous 1-second interval
   
-  page.addEventListener('unload', () => {
+  rootElement.addEventListener('unload', () => {
     if (logsInterval) {
       clearInterval(logsInterval);
     }
   });
-
-  return page;
 }

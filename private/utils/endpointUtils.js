@@ -2,20 +2,15 @@ const fs = require("fs");
 const { LOG_FILE } = require("../utils/logger");
 const cache = require("./cache");
 const http = require("http");
+const { INITIAL_TEST_USERS, INITIAL_NEXT_USER_ID, INITIAL_TEST_DATA_RECORDS, INITIAL_NEXT_DATA_ID, HEALTH_API_RESPONDING, HEALTH_DATABASE_UNAVAILABLE, HEALTH_DATABASE_AVAILABLE, HEALTH_DATABASE_MISSING, HEALTH_CACHE_PING_FAILED, HEALTH_CACHE_OK, HEALTH_MONITORING_NOT_ACCESSIBLE, HEALTH_MONITORING_AVAILABLE, HEALTH_MONITORING_MISSING, HEALTH_OK_THRESHOLD, HEALTH_DEGRADED_THRESHOLD } = require("../settings/serverEndpointSettings");
 
 
-let testUsers = [
-  { id: 1, name: "John Doe", email: "john@example.com" },
-  { id: 2, name: "Jane Smith", email: "jane@example.com" }
-];
-let nextUserId = 3;
-let nextDataId = 3;
+let testUsers = INITIAL_TEST_USERS;
+let nextUserId = INITIAL_NEXT_USER_ID;
+let nextDataId = INITIAL_NEXT_DATA_ID;
 
 let testData = {
-  records: [
-    { id: 1, value: "test data 1" },
-    { id: 2, value: "test data 2" }
-  ]
+  records: INITIAL_TEST_DATA_RECORDS
 };
 
 const initialTestUsers = JSON.parse(JSON.stringify(testUsers)); // Store initial state as a deep copy
@@ -28,66 +23,41 @@ const resetTestState = () => {
   nextUserId = initialNextUserId;
   testData = JSON.parse(JSON.stringify(initialTestData));
   nextDataId = initialNextDataId;
-  ACTIVE_TESTS_RUNNING = 0; // Reset active test count
-  
-  // Clear server logs
-  const requestOptions = {
-    hostname: 'localhost',
-    port: 8000, // Assuming your server runs on port 8000
-    path: '/api/v1/logs',
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Test-Mode': 'true', // Add a header to indicate this is a test cleanup request
-    },
-  };
-
-  const clientReq = http.request(requestOptions, (clientRes) => {
-    if (clientRes.statusCode !== 200) {
-      console.error(`[RESET_TEST_STATE] Failed to clear logs, status: ${clientRes.statusCode}`);
-    } else {
-      console.debug(`[RESET_TEST_STATE] Server logs cleared successfully.`);
-    }
-  });
-
-  clientReq.on('error', (e) => {
-    console.error(`[RESET_TEST_STATE] Error clearing logs: ${e.message}`);
-  });
-  clientReq.end();
+  ACTIVE_TESTS_RUNNING = 0;
 };
 
 module.exports = {
   testUsers,
   nextUserId,
   getHealthChecks: async () => {
-    const api = { ok: true, message: "API responding" };
+    const api = { ok: true, message: HEALTH_API_RESPONDING };
 
-    let database = { ok: false, message: "Unavailable" };
+    let database = { ok: false, message: HEALTH_DATABASE_UNAVAILABLE };
     try {
       const hasUsers = Array.isArray(testUsers);
       database = hasUsers
-        ? { ok: true, message: `In-memory data available (${testUsers.length} users)` }
-        : { ok: false, message: "In-memory data missing" };
+        ? { ok: true, message: HEALTH_DATABASE_AVAILABLE(testUsers.length) }
+        : { ok: false, message: HEALTH_DATABASE_MISSING };
     } catch (e) {
       database = { ok: false, message: e.message };
     }
 
-    let cacheCheck = { ok: false, message: "Cache ping failed" };
+    let cacheCheck = { ok: false, message: HEALTH_CACHE_PING_FAILED };
     try {
       const ok = await cache.ping();
-      cacheCheck = ok ? { ok: true, message: "Cache OK" } : { ok: false, message: "Cache ping failed" };
+      cacheCheck = ok ? { ok: true, message: HEALTH_CACHE_OK } : { ok: false, message: HEALTH_CACHE_PING_FAILED };
     } catch (e) {
       cacheCheck = { ok: false, message: e.message };
     }
 
-    let monitoring = { ok: false, message: "Log file not accessible" };
+    let monitoring = { ok: false, message: HEALTH_MONITORING_NOT_ACCESSIBLE };
     try {
       const exists = fs.existsSync(LOG_FILE);
       if (exists) {
         const stat = fs.statSync(LOG_FILE);
-        monitoring = { ok: true, message: `Log file size ${stat.size} bytes` };
+        monitoring = { ok: true, message: HEALTH_MONITORING_AVAILABLE(stat.size) };
       } else {
-        monitoring = { ok: false, message: "Log file missing" };
+        monitoring = { ok: false, message: HEALTH_MONITORING_MISSING };
       }
     } catch (e) {
       monitoring = { ok: false, message: e.message };
@@ -95,7 +65,7 @@ module.exports = {
 
     const checks = { api, database, cache: cacheCheck, monitoring };
     const okCount = Object.values(checks).filter(c => c.ok).length;
-    const overall = okCount === 4 ? "ok" : okCount >= 2 ? "degraded" : "down";
+    const overall = okCount === HEALTH_OK_THRESHOLD ? "ok" : okCount >= HEALTH_DEGRADED_THRESHOLD ? "degraded" : "down";
     return { status: overall, checks, timestamp: new Date().toISOString() };
   },
   updateNextUserId: () => {

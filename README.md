@@ -36,22 +36,99 @@ Das Hauptziel des Projekts ist es, eine Plattform zum Testen und Überwachen von
 *   **Testing**: Jest für Unit- und Integrationstests.
 
 ### 3. Dateistruktur
-Die Anwendung ist in zwei Hauptbereiche unterteilt: `private/` für serverseitige Logik und `public/` für clientseitige Assets.
+```
+.
+├── public/                 # Client-side (Frontend) code - served to the browser
+│   ├── index.html          # Main HTML file, the entry point for the SPA
+│   ├── app.js              # Core client-side application logic, orchestrates page loading
+│   ├── css/                # Global and component-specific stylesheets
+│   ├── assets/             # Static assets like images (e.g., logo.svg)
+│   ├── setup/              # Core client-side utilities for application setup
+│   │   ├── dom.js          # DOM manipulation helpers (modals, toasts)
+│   │   ├── layout.js       # Renders overall page layout (header, navigation)
+│   │   ├── navigation.js   # Handles navigation button active states
+│   │   └── pageSwitch.js   # Manages dynamic loading and switching of pages
+│   ├── pages/              # Individual page modules, dynamically loaded by pageSwitch.js
+│   │   ├── _main_page/     # Dashboard page
+│   │   │   ├── _main_page.css
+│   │   │   ├── _main_page.js   # Page-specific App and onMount functions
+│   │   │   ├── dashboardService.js # Data fetching for the dashboard
+│   │   │   └── dashboardUtils.js   # Utility functions for dashboard UI
+│   │   ├── api_console/    # API Console page
+│   │   │   ├── api_console.css
+│   │   │   ├── api_page.js
+│   │   │   ├── apiService.js   # API call execution
+│   │   │   └── apiUtils.js     # Utilities for API console UI (e.g., output formatting)
+│   │   ├── log_viewer/     # System Logs viewer page
+│   │   │   ├── log_page.js
+│   │   │   ├── log_viewer.css
+│   │   │   ├── logService.js   # Log fetching and clearing
+│   │   │   └── logUtils.js     # Utilities for log parsing, filtering, and rendering
+│   │   └── test_suite/     # Test Suite page
+│   │       ├── test_page.js
+│   │       ├── test_suite.css
+│   │       ├── testData.js     # Test-specific data
+│   │       └── testFunctions.js  # Functions to execute tests
+│   ├── settings/           # Centralized client-side configuration files
+│   │   ├── settings.js     # General client-side settings
+│   │   ├── appSettings.js  # Settings for app.js (e.g., pages configuration)
+│   │   ├── apiSettings.js  # Settings for public/utils/api.js (e.g., default fetch options)
+│   │   ├── authSettings.js # Client-side authentication-related settings (e.g., logout messages, endpoints)
+│   │   ├── domSettings.js  # Settings for public/setup/dom.js (e.g., modal/toast defaults)
+│   │   ├── layoutSettings.js # Settings for public/setup/layout.js and navigation.js (e.g., brand text, nav links)
+│   │   ├── _main_pageSettings.js # Settings specific to the dashboard page
+│   │   ├── pageSwitchSettings.js # Settings for public/setup/pageSwitch.js (e.g., page module base path)
+│   │   └── testSettings.js # Settings specific to the test suite page
+│   └── utils/              # General client-side utility functions
+│       ├── api.js          # Generic API interaction functions
+│       └── logout.js       # Logout functionality
+│       └── theme.js        # Theme switching logic
+│
+├── private/                # Server-side (Backend) code - Node.js
+│   ├── middleware/         # Express middleware
+│   │   └── auth.js         # Authentication middleware
+│   ├── routes/             # API route definitions for Express
+│   │   ├── authRoutes.js   # Authentication-related endpoints (login, logout)
+│   │   ├── data.js         # Data management endpoints
+│   │   ├── index.js        # Server root route (serves index.html)
+│   │   ├── meta.js         # Metadata and server control endpoints (e.g., shutdown)
+│   │   └── users.js        # User management endpoints
+│   ├── settings/           # Centralized server-side configuration files
+│   │   ├── serverAuthSettings.js   # Server-side authentication settings
+│   │   ├── serverCacheSettings.js  # Server-side cache settings
+│   │   ├── serverDataSettings.js   # Server-side data management settings
+│   │   ├── serverEndpointSettings.js # Server-side endpoint utility settings
+│   │   ├── serverLoggerSettings.js # Server-side logger settings
+│   │   ├── serverMetaSettings.js   # Server-side meta/test settings
+│   │   ├── serverPathsSettings.js  # Server-side path settings (e.g., to public/index.html)
+│   │   └── serverUsersSettings.js  # Server-side user management settings
+│   └── utils/              # Server-side utility functions
+│       ├── authUtils.js    # Authentication-related helpers
+│       ├── cache.js        # Caching mechanisms
+│       ├── endpointUtils.js  # Helpers for endpoint management (e.g., initial data)
+│       ├── logger.js       # Server-side logging utility
+│       └── routerUtils.js  # Utilities for Express router setup
+│
+├── tests/                  # Application tests
+│   ├── integration.test.js # Integration tests
+│   ├── performance.test.js # Performance tests
+│   └── testConfig.js       # Test-specific configuration (was moved from public/utils/testConfig.js)
+│
+├── jest.config.js          # Jest test runner configuration
+├── main.js                 # Main server entry point (starts Express app)
+├── package.json            # Project dependencies and scripts
+└── README.md               # Project documentation
+```
 
-*   `main.js`: Der Haupteinstiegspunkt der Anwendung, der den Express-Server initialisiert und Middleware und Routen einrichtet.
-*   `private/`:
-    *   `middleware/`: Enthält Middleware-Funktionen wie Authentifizierung (`auth.js`) und IP-Erfassung.
-    *   `routes/`: Definiert API-Routen für Authentifizierung (`authRoutes.js`), Benutzer (`users.js`), Metadaten (`meta.js`) und Testdaten (`data.js`). Die `index.js` konsolidiert diese Routen.
-    *   `utils/`: Hilfsmodule für Cache-Verwaltung (`cache.js`), Endpunkt-Dienstprogramme (`endpointUtils.js`), benutzerdefiniertes Logging (`logger.js`) und Router-Dienstprogramme (`routerUtils.js`).
-*   `public/`:
-    *   `app.js`: Der Haupteinstiegspunkt der clientseitigen Anwendung, der das Layout rendert und das Seitenwechseln einrichtet.
-    *   `css/`: Enthält modularisierte CSS-Dateien (`variables.css`, `base.css`, `components.css`, `utilities.css`, `animations.css`, `layout.css`, `media.css`), die über `global.css` importiert werden.
-    *   `pages/`: Enthält JavaScript-Module für verschiedene Frontend-Seiten wie das Haupt-Dashboard (`_main_page.js`), die API-Konsole (`api_page.js`), die Protokollseite (`log_page.js`) und die Test-Suite (`test_page.js`).
-    *   `setup/`: JavaScript-Dateien für DOM-Manipulation (`dom.js`), Layout-Struktur (`layout.js`), Navigationslogik (`navigation.js`) und Seitenwechselmechanismen (`pageSwitch.js`).
-    *   `utils/`: Hilfs-JavaScript-Module für API-Aufrufe (`api.js`), Logout-Funktionalität (`logout.js`) und Theme-Management (`theme.js`).
-*   `tests/`: Enthält Integrations- und Performance-Tests.
-*   `server.log`: Die Protokolldatei, in die alle Server-Logs geschrieben werden.
-*   `package.json`: Definiert Projektmetadaten und Abhängigkeiten.
+**Key Principles of the Structure:**
+
+*   **Separation of Concerns:** Client-side and server-side codebases are distinct, interacting primarily via API calls.
+*   **Modular Pages:** Each page in `public/pages/` is a self-contained module, typically including its own CSS, JavaScript logic (`_page.js`), data services (`*Service.js`), and utility functions (`*Utils.js`). This promotes reusability and maintainability.
+*   **Centralized Configuration:** The `settings/` directories (both `public` and `private`) house all configurable values, making it easy to manage and update application parameters without digging through business logic.
+*   **Clear Routing:** `private/routes/` defines server API endpoints, while `public/setup/pageSwitch.js` handles client-side routing and dynamic page loading.
+*   **Utility Functions:** Shared functionalities are organized into `utils/` directories, reducing code duplication.
+
+This structure allows for easier development, debugging, and future expansion, as different parts of the application can be worked on independently.
 
 ### 4. Kernfunktionalitäten
 *   **API-Endpunkte**:
@@ -77,4 +154,7 @@ In unserer letzten Interaktion wurden folgende wichtige Änderungen vorgenommen:
 *   **Fehlerbehebung**: Ein `SyntaxError` in `main.js` im Zusammenhang mit einem unvollständigen Template-Literal wurde behoben.
 *   **Unnötigen Code entfernt**: Nicht verwendete Abhängigkeiten (z.B. `child_process` aus `package.json`, da es ein integriertes Node.js-Modul ist) und nicht verwendete Funktionen (z.B. `createComponent`, `$` und `$$` aus `public/setup/dom.js`) wurden entfernt.
 *   **Standardisierung des Seitenexports**: `public/pages/_main_page.js` wurde geändert, um die `App`-Funktion zu exportieren, wodurch die Konsistenz mit anderen Seitenmodulen in `public/setup/pageSwitch.js` sichergestellt wird.
+*   **Refaktorierung der Einstellungen**: Alle anwendungsweiten Einstellungen wurden in dedizierte `settings` Ordner sowohl im `public/` als auch im `private/` Verzeichnis verschoben und in modularen Dateien organisiert (z.B. `apiSettings.js`, `authSettings.js`, `_main_pageSettings.js`). Dies zentralisiert die Konfiguration und verbessert die Wartbarkeit.
+*   **Verbesserte DOM-Interaktionen**: Die Logik für DOM-Elementabfragen und Event-Listener-Zuweisungen wurde in die `onMount` Funktionen der Seitenmodule (`api_page.js`, `log_page.js`) verschoben, um sicherzustellen, dass DOM-Elemente vor dem Zugriff vollständig gerendert sind. Dies behebt Fehler im Zusammenhang mit undefinierten Elementen.
+*   **Konsistente Funktionsparameter**: Die Parameterübergabe an Utility-Funktionen, insbesondere in `logUtils.js`, wurde korrigiert, um die korrekte Übergabe von DOM-Elementen und anderen Werten sicherzustellen, wodurch `TypeError`-Fehler behoben wurden.
 

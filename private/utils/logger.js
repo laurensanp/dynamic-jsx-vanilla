@@ -1,12 +1,13 @@
 const fs = require("fs");
+const { LOG_FILENAME, LOG_FILE_DELETE_ERROR, LOG_FILE_WRITE_ERROR } = require("../settings/serverLoggerSettings");
 
-const LOG_FILE = 'server.log';
+const LOG_FILE = LOG_FILENAME;
 try {
   if (fs.existsSync(LOG_FILE)) {
     fs.unlinkSync(LOG_FILE);
   }
 } catch (err) {
-  console.error(`Error removing log file on startup: ${err.message}`);
+  console.error(`${LOG_FILE_DELETE_ERROR} ${err.message}`);
 }
 // The log file will now persist across server restarts.
 
@@ -30,7 +31,7 @@ const createLogger = (originalConsoleMethod, type, category = '') => (...args) =
   originalConsoleMethod(formattedMessage);
   fs.appendFile(LOG_FILE, formattedMessage + '\n', (err) => {
     if (err) {
-      originalError(`Failed to write to log file: ${err.message}`);
+      originalError(`${LOG_FILE_WRITE_ERROR} ${err.message}`);
     }
   });
 };

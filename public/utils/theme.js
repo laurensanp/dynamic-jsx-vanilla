@@ -1,9 +1,11 @@
+import { DEFAULT_THEME, THEME_COLOR_META } from "../settings/themeSettings.js";
+
 export function ensureDarkTheme() {
   try {
     const root = document.documentElement;
-    root.setAttribute('data-theme', 'dark');
+    root.setAttribute('data-theme', DEFAULT_THEME);
     
-    root.style.colorScheme = 'dark';
+    root.style.colorScheme = DEFAULT_THEME;
     if (document.body) {
       document.body.style.background = 'var(--background)';
       document.body.style.color = 'var(--text-primary)';
@@ -16,7 +18,7 @@ export function ensureDarkTheme() {
       meta.setAttribute('name', 'theme-color');
       document.head.appendChild(meta);
     }
-    meta.setAttribute('content', '#000000');
+    meta.setAttribute('content', THEME_COLOR_META);
   } catch (_) {
     
   }

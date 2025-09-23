@@ -1,88 +1,14 @@
-import { html } from "../setup/dom.js";
-import { TEST_USERNAME, TEST_PASSWORD, CONCURRENT_USERS_COUNT, MEMORY_USAGE_REQUESTS, CONCURRENT_USER_CREATION_COUNT, ENDPOINT_STRESS_TEST_REQUESTS, LARGE_DATA_PAYLOAD_SIZE, RESOURCE_EXHAUSTION_OPERATIONS } from '../utils/testConfig.js';
+import { html } from "../../setup/dom.js";
+import { testSuites } from './testData.js';
+import { calculateStats, updateStatsDisplay, getStatusIcon, addOutput, updateTestItemUI, resetTestResultsUI } from './testUtils.js';
+import { testFunctions, executeFetchTest, loginTestUser } from './testFunctions.js';
+import * as testConfig from '/public/settings/testSettings.js';
+import * as settings from '../../settings/settings.js';
 
 export function App() {
-  const testSuites = [
-    {
-      id: 'api-tests',
-      name: 'API-Endpunkt-Tests',
-      description: 'Testen Sie CRUD-Operationen und API-Funktionalität',
-      tests: [
-        { name: 'GET /api/v1/hello', status: 'pending', duration: '-' },
-        { name: 'POST /api/v1/auth', status: 'pending', duration: '-' },
-        { name: 'GET /api/v1/users', status: 'pending', duration: '-' },
-        { name: 'Benutzer erstellen Test', status: 'pending', duration: '-' },
-        { name: 'Concurrent User Creation', status: 'pending', duration: '-' },
-        { name: 'Full User CRUD Test', status: 'pending', duration: '-' },
-        { name: 'Brute-Force Login Attempt', status: 'pending', duration: '-' },
-        { name: 'Data Integrity Test', status: 'pending', duration: '-' },
-        { name: 'Large Data Payload Test', status: 'pending', duration: '-' },
-      ]
-    },
-    {
-      id: 'integration-tests',
-      name: 'Integrationstests',
-      description: 'Ende-zu-Ende Systemintegrationstests',
-      tests: [
-        { name: 'Datenbankverbindung', status: 'pending', duration: '-' },
-        { name: 'Cache-Schicht', status: 'pending', duration: '-' },
-        { name: 'Externe API', status: 'pending', duration: '-' },
-      ]
-    },
-    {
-      id: 'performance-tests',
-      name: 'Leistungstests',
-      description: 'Last- und Leistungstests',
-      tests: [
-        { name: 'Antwortzeit < 200ms', status: 'pending', duration: '-'},
-        { name: 'Gleichzeitige Benutzer (100)', status: 'pending', duration: '-' },
-        { name: 'Speichernutzung', status: 'pending', duration: '-' },  
-        { name: 'Endpoint Stress Test', status: 'pending', duration: '-' },
-        { name: 'Resource Exhaustion Test', status: 'pending', duration: '-' },
-      ]
-    }
-  ];
   
-  const calculateStats = () => {
-    let stats = { passed: 0, failed: 0, warning: 0, pending: 0 };
-    
-    testSuites.forEach(suite => {
-      suite.tests.forEach(test => {
-        if (stats.hasOwnProperty(test.status)) {
-          stats[test.status]++;
-        }
-      });
-    });
-    
-    return stats;
-  };
-    
-    const updateStatElement = (id, value) => {
-      
-      const element = document.getElementById(id);
-      
-      if (element) {
-        
-        element.style.transform = 'scale(1.2)';
-        element.style.transition = 'transform 0.3s ease';
-        
-        setTimeout(() => {
-          element.textContent = value;
-          element.style.transform = 'scale(1)';
-        }, 150);
-      }
-    };
-
-  const updateStatsDisplay = (newStats = null) => {
-    const stats = newStats || calculateStats();
-    
-    updateStatElement('passed-count', stats.passed);
-    updateStatElement('failed-count', stats.failed);
-    updateStatElement('warning-count', stats.warning);
-    updateStatElement('pending-count', stats.pending);
-  };
-
   const page = html`
+    <link rel="stylesheet" href="/public/pages/test_suite/test_suite.css">
     <div class="test-suite">
       <div class="test-header">
         <h1>Test-Suite</h1>
@@ -136,7 +62,7 @@ export function App() {
               ${suite.tests.map(test => `
                 <div class="test-item ${test.status}">
                   <div class="test-status-icon">
-                    ${test.status === 'passed' ? '✓' : test.status === 'failed' ? '✗' : test.status === 'warning' ? '⚠' : test.status === 'pending' ? '⏳' : '●'}
+                    ${getStatusIcon(test.status)}
                   </div>
                   <div class="test-info">
                     <div class="test-name">${test.name}</div>
@@ -164,161 +90,6 @@ export function App() {
         <div id="test_output" class="output test-console"></div>
       </div>
     </div>
-
-    <style>
-      #page-content {
-        max-width: 1600px;
-        margin: 0 auto;
-      }
-
-      .test-suite {
-        padding: var(--space-xl) 0;
-      }
-      
-      .test-header {
-        text-align: center;
-        margin-bottom: var(--space-2xl);
-      }
-      
-      .test-header h1 {
-        margin-bottom: var(--space-sm);
-      }
-      
-      .test-actions {
-        display: flex;
-        gap: var(--space-sm);
-        justify-content: center;
-        margin-top: var(--space-lg);
-      }
-      
-      .test-overview {
-        margin-bottom: var(--space-2xl);
-      }
-      
-      .test-stats {
-        display: flex;
-        gap: var(--space-lg);
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-      
-      .stat-item {
-        text-align: center;
-        padding: var(--space-lg);
-        border-radius: var(--radius-lg);
-        min-width: 100px;
-      }
-      
-      .stat-item.passed { background: rgba(72, 187, 120, 0.1); border: 1px solid var(--success); }
-      .stat-item.failed { background: rgba(245, 101, 101, 0.1); border: 1px solid var(--error); }
-      .stat-item.warning { background: rgba(237, 137, 54, 0.1); border: 1px solid var(--warning); }
-      .stat-item.pending { background: rgba(66, 153, 225, 0.1); border: 1px solid var(--info); }
-      .stat-item.active { background: rgba(147, 112, 219, 0.1); border: 1px solid var(--primary); }
-      
-      .stat-number {
-        font-size: var(--font-size-3xl);
-        font-weight: 700;
-        margin-bottom: var(--space-xs);
-      }
-      
-      .stat-label {
-        font-size: var(--font-size-sm);
-        color: var(--text-muted);
-        text-transform: uppercase;
-        font-weight: 600;
-      }
-      
-      .test-suites-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: var(--space-lg);
-        margin-bottom: var(--space-2xl);
-      }
-      
-      .test-results {
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-sm);
-      }
-      
-      .test-item {
-        display: flex;
-        align-items: center;
-        gap: var(--space-sm);
-        padding: var(--space-sm);
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-sm);
-        transition: var(--transition);
-      }
-      
-      .test-item:hover {
-        background: rgba(255, 255, 255, 0.04);
-      }
-      
-      .test-status-icon {
-        width: 16px;
-        height: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      
-      .test-info {
-        flex: 1;
-      }
-      
-      .test-name {
-        font-size: var(--font-size-sm);
-        font-family: var(--font-mono);
-      }
-      
-      .test-duration {
-        font-size: var(--font-size-xs);
-        color: var(--text-muted);
-      }
-      
-      .btn-icon {
-        background: none;
-        border: none;
-        color: var(--text-muted);
-        cursor: pointer;
-        padding: var(--space-xs);
-        border-radius: var(--radius-sm);
-        transition: var(--transition);
-      }
-      
-      .btn-icon:hover {
-        color: var(--text-primary);
-        background: rgba(255, 255, 255, 0.1);
-      }
-      
-      .test-console {
-        min-height: 250px;
-        font-family: var(--font-mono);
-      }
-      
-      @media (max-width: 1200px) {
-        .test-suites-grid {
-          grid-template-columns: repeat(2, 1fr);
-        }
-      }
-      
-      @media (max-width: 768px) {
-        .test-stats {
-          grid-template-columns: repeat(2, 1fr);
-        }
-        
-        .test-actions {
-          flex-direction: column;
-          align-items: center;
-        }
-        
-        .test-suites-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
   `;
 
   function getStatusIcon(status) {
@@ -334,21 +105,9 @@ export function App() {
   const runAllBtn = page.querySelector('#run_all_btn');
   const runFailedBtn = page.querySelector('#run_failed_btn');
   const clearResultsBtn = page.querySelector('#clear_results_btn');
-  const clearOutputBtn = page.querySelector('#clear_output_btn');
+  const clearOutputBtn = page.querySelector('#test_output');
   const testOutput = page.querySelector('#test_output');
   const suiteButtons = page.querySelectorAll('[data-suite]');
-
-  async function loginTestUser() {
-    const response = await fetch('/api/v1/auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: TEST_USERNAME, password: TEST_PASSWORD })
-    });
-    if (!response.ok) {
-      throw new Error(`Failed to login test user: ${response.statusText}`);
-    }
-    return response.json();
-  }
 
   let liveTestResults = {
     passed: 0,
@@ -358,85 +117,21 @@ export function App() {
   };
 
   const updateLiveStats = () => {
-    updateStatsDisplay(liveTestResults);
+    updateStatsDisplay(liveTestResults, testSuites);
   };
 
-  const addOutput = (message, type = 'info') => {
-    // Do not log expected 401s from brute force test as errors in the UI console
-    if (type === 'error' && message.includes('Anfragen führten zu erwartetem 401 Unauthorized/Ratelimit')) {
-      return;
-    }
-
-    const timestamp = new Date().toLocaleTimeString();
-    const icon = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
-    testOutput.innerHTML += `<div class=\"log-entry ${type}\">[${timestamp}] ${icon} ${message}</div>`;
-    testOutput.scrollTop = testOutput.scrollHeight;
-    
-    // Removed redundant liveTestResults incrementing logic, as updateTestItemUI handles this.
-  };
-  
-  function updateTestItemUI(testName, statusClass, durationMs) {
-    const items = document.querySelectorAll('.test-item');
-    items.forEach(item => {
-      const nameEl = item.querySelector('.test-name');
-      if (!nameEl) return;
-      if (nameEl.textContent.trim() !== testName.trim()) return;
-
-      const suite = testSuites.find(s => s.tests.some(t => t.name.trim() === testName.trim()));
-      const test = suite && suite.tests.find(t => t.name.trim() === testName.trim());
-
-      if (test) {
-        // Decrement old status count, increment new status count
-        if (liveTestResults.hasOwnProperty(test.status)) {
-          liveTestResults[test.status]--;
-        }
-        test.status = statusClass; // Update the status in the testSuites array
-        if (liveTestResults.hasOwnProperty(statusClass)) {
-          liveTestResults[statusClass]++;
-        }
-        updateLiveStats(); // Update the display
-      }
-
-      item.classList.remove('passed', 'failed', 'warning', 'pending');
-      item.classList.add(statusClass);
-
-      const durEl = item.querySelector('.test-duration');
-      if (durEl) durEl.textContent = `${durationMs}ms`;
-      
-      const iconEl = item.querySelector('.test-status-icon');
-      if (iconEl) {
-        iconEl.textContent = statusClass === 'passed' ? '✓' : statusClass === 'failed' ? '✗' : statusClass === 'warning' ? '⚠' : '⏳';
-      }
-    });
+  const addOutputProxy = (message, type = 'info') => {
+    addOutput(testOutput, message, type);
   }
-  
-  const resetTestResultsUI = () => {
-    testOutput.innerHTML = '';
-    liveTestResults = {
-      passed: 0,
-      failed: 0,
-      warning: 0,
-      pending: testSuites.reduce((sum, suite) => sum + suite.tests.length, 0)
-    };
 
-    // Reset all test statuses to pending first
-    testSuites.forEach(suite => {
-      suite.tests.forEach(test => {
-        test.status = 'pending';
-      });
-    });
-    
-    updateStatsDisplay(liveTestResults);
-    document.querySelectorAll('.test-item').forEach(item => {
-      item.classList.remove('passed', 'failed', 'warning', 'pending');
-      item.classList.add('pending');
-      const durEl = item.querySelector('.test-duration');
-      if (durEl) durEl.textContent = '-';
-      const iconEl = item.querySelector('.test-status-icon');
-      if (iconEl) iconEl.textContent = '⏳';
-    });
-    addOutput('Test-Suite bereit. Klicken Sie auf „Alle Tests starten“, um zu beginnen.');
-  };
+  const updateTestItemUIProxy = (testName, statusClass, durationMs) => {
+    updateTestItemUI(testSuites, liveTestResults, testName, statusClass, durationMs);
+    updateLiveStats();
+  }
+
+  const resetTestResultsUIProxy = () => {
+    resetTestResultsUI(testOutput, liveTestResults, testSuites, updateStatsDisplay, addOutputProxy);
+  }
 
   const testFunctions = {
     'GET /api/v1/hello': async () => {
@@ -452,7 +147,7 @@ export function App() {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: TEST_USERNAME, password: TEST_PASSWORD })
+          body: JSON.stringify({ username: testConfig.TEST_USERNAME, password: testConfig.TEST_PASSWORD })
         },
         200,
         (res, data) => res.ok && data.success === true
@@ -577,7 +272,7 @@ export function App() {
       const start = performance.now();
       const promises = [];
       
-      for (let i = 0; i < CONCURRENT_USERS_COUNT; i++) { 
+      for (let i = 0; i < testConfig.CONCURRENT_USERS_COUNT; i++) { 
         promises.push(executeFetchTest('/api/v1/hello', { method: 'GET' }, 200, (res, data) => res.ok));
       }
       
@@ -586,9 +281,9 @@ export function App() {
       const successCount = results.filter(r => r.success).length;
       
       return {
-        success: successCount === CONCURRENT_USERS_COUNT && duration < 2000,
+        success: successCount === testConfig.CONCURRENT_USERS_COUNT && duration < 2000,
         status: 200,
-        message: `${successCount}/${CONCURRENT_USERS_COUNT} Anfragen erfolgreich in ${Math.round(duration)}ms`,
+        message: `${successCount}/${testConfig.CONCURRENT_USERS_COUNT} Anfragen erfolgreich in ${Math.round(duration)}ms`,
         expectedStatus: 200
       };
     },
@@ -596,7 +291,7 @@ export function App() {
     'Memory Usage': async () => {
       
       const promises = [];
-      for (let i = 0; i < MEMORY_USAGE_REQUESTS; i++) {
+      for (let i = 0; i < testConfig.MEMORY_USAGE_REQUESTS; i++) {
         promises.push(executeFetchTest('/api/v1/logs', { method: 'GET' }, 200, (res, data) => res.ok));
       }
       
@@ -604,15 +299,15 @@ export function App() {
       const successCount = results.filter(r => r.success).length;
       
       return {
-        success: successCount === MEMORY_USAGE_REQUESTS,
+        success: successCount === testConfig.MEMORY_USAGE_REQUESTS,
         status: 200,
-        message: `${successCount}/${MEMORY_USAGE_REQUESTS} speicherintensive Anfragen erfolgreich`,
+        message: `${successCount}/${testConfig.MEMORY_USAGE_REQUESTS} speicherintensive Anfragen erfolgreich`,
         expectedStatus: 200
       };
     },
 
     'Endpoint Stress Test': async () => {
-      const NUM_REQUESTS = ENDPOINT_STRESS_TEST_REQUESTS;
+      const NUM_REQUESTS = testConfig.ENDPOINT_STRESS_TEST_REQUESTS;
       const promises = [];
       for (let i = 0; i < NUM_REQUESTS; i++) {
         promises.push(executeFetchTest('/api/v1/health', { method: 'GET' }, 200, (res, data) => res.ok && res.status === 200));
@@ -629,7 +324,7 @@ export function App() {
     },
 
     'Concurrent User Creation': async () => {
-      const NUM_USERS = CONCURRENT_USER_CREATION_COUNT;
+      const NUM_USERS = testConfig.CONCURRENT_USER_CREATION_COUNT;
       const promises = [];
       
       await fetch('/api/v1/meta/reset-test-state', { method: 'POST' }); // Reset test state
@@ -843,7 +538,7 @@ export function App() {
       }
     },
     'Large Data Payload Test': async () => {
-      const largeData = { content: 'a'.repeat(LARGE_DATA_PAYLOAD_SIZE) }; // 500KB of data
+      const largeData = { content: 'a'.repeat(testConfig.LARGE_DATA_PAYLOAD_SIZE) }; // 500KB of data
 
       try {
         await loginTestUser(); // Log in test user
@@ -881,7 +576,7 @@ export function App() {
       }
     },
     'Resource Exhaustion Test': async () => {
-      const NUM_OPERATIONS = RESOURCE_EXHAUSTION_OPERATIONS;
+      const NUM_OPERATIONS = testConfig.RESOURCE_EXHAUSTION_OPERATIONS;
       const userIds = [];
 
       try {
@@ -945,15 +640,15 @@ export function App() {
   }
 
   const runTest = async (testName) => {
-    addOutput(`Läuft: ${testName}`);
+    addOutputProxy(`Läuft: ${testName}`);
     
     const startTime = performance.now();
     
     try {
       const testFunction = testFunctions[testName];
       if (!testFunction) {
-        addOutput(`${testName} - ÜBERSPRUNGEN (Keine Testimplementierung)`, 'warning');
-        updateTestItemUI(testName, 'warning', 0);
+        addOutputProxy(`${testName} - ÜBERSPRUNGEN (Keine Testimplementierung)`, 'warning');
+        updateTestItemUIProxy(testName, 'warning', 0);
         return; // Exit early for skipped tests
       }
       
@@ -961,16 +656,16 @@ export function App() {
       const duration = Math.round(performance.now() - startTime);
       
       if (result.success) {
-        addOutput(`${testName} - BESTANDEN (${duration}ms) - ${result.message}`, 'success');
-        updateTestItemUI(testName, 'passed', duration);
+        addOutputProxy(`${testName} - BESTANDEN (${duration}ms) - ${result.message}`, 'success');
+        updateTestItemUIProxy(testName, 'passed', duration);
       } else {
-        addOutput(`${testName} - FEHLGESCHLAGEN (${duration}ms) - Status: ${result.status}, ${result.message}`, 'error');
-        updateTestItemUI(testName, 'failed', duration);
+        addOutputProxy(`${testName} - FEHLGESCHLAGEN (${duration}ms) - Status: ${result.status}, ${result.message}`, 'error');
+        updateTestItemUIProxy(testName, 'failed', duration);
       }
     } catch (error) {
       const duration = Math.round(performance.now() - startTime);
-      addOutput(`${testName} - FEHLER (${duration}ms) - ${error.message}`, 'error');
-      updateTestItemUI(testName, 'failed', duration);
+      addOutputProxy(`${testName} - FEHLER (${duration}ms) - ${error.message}`, 'error');
+      updateTestItemUIProxy(testName, 'failed', duration);
     } finally {
       
     }
@@ -978,8 +673,8 @@ export function App() {
 
   
   runAllBtn.addEventListener('click', () => {
-    resetTestResultsUI(); // Reset UI and live stats before running all tests
-    addOutput('Starte komplette Test-Suite...');
+    resetTestResultsUIProxy(); // Reset UI and live stats before running all tests
+    addOutputProxy('Starte komplette Test-Suite...');
     testSuites.forEach(suite => {
       suite.tests.forEach(test => {
         runTest(test.name);
@@ -988,8 +683,8 @@ export function App() {
   });
 
   runFailedBtn.addEventListener('click', () => {
-    resetTestResultsUI(); // Reset UI and live stats before running failed tests
-    addOutput('Führe nur fehlgeschlagene Tests aus...');
+    resetTestResultsUIProxy(); // Reset UI and live stats before running failed tests
+    addOutputProxy('Führe nur fehlgeschlagene Tests aus...');
     testSuites.forEach(suite => {
       suite.tests
         .filter(test => test.status === 'failed')
@@ -998,22 +693,22 @@ export function App() {
   });
 
   clearResultsBtn.addEventListener('click', () => {
-    resetTestResultsUI();
-    addOutput('Testergebnisse geleert', 'warning');
+    resetTestResultsUIProxy();
+    addOutputProxy('Testergebnisse geleert', 'warning');
   });
 
   clearOutputBtn.addEventListener('click', () => {
     testOutput.innerHTML = '';
-    addOutput('Testkonsole initialisiert');
+    addOutputProxy('Testkonsole initialisiert');
   });
 
   suiteButtons.forEach(btn => {
     btn.addEventListener('click', (e) => {
-      resetTestResultsUI(); // Reset UI and live stats before running the suite
+      resetTestResultsUIProxy(); // Reset UI and live stats before running the suite
       const suiteId = e.target.dataset.suite;
       const suite = testSuites.find(s => s.id === suiteId);
       if (suite) {
-        addOutput(`Starte Test-Suite: ${suite.name}`);
+        addOutputProxy(`Starte Test-Suite: ${suite.name}`);
         suite.tests.forEach(test => runTest(test.name));
       }
     });
@@ -1031,7 +726,7 @@ export function App() {
       if (!nameEl) return;
       const testName = nameEl.textContent.trim();
       
-      resetTestResultsUI(); // Reset UI and live stats before running a single test
+      resetTestResultsUIProxy(); // Reset UI and live stats before running a single test
       runTest(testName);
     });
   }

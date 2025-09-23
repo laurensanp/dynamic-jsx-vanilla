@@ -1,0 +1,48 @@
+/* Styles for the Main Dashboard page */
+
+.dashboard { padding: var(--space-xl) 0; }
+.dashboard-header { text-align: center; margin-bottom: var(--space-2xl); }
+.dashboard-header h1 { margin-bottom: var(--space-sm); }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(200px, 1fr));
+  gap: var(--space-lg);
+  margin-bottom: var(--space-2xl);
+  max-width: 1100px;
+  margin-left: auto; margin-right: auto;
+}
+.stat-card { display: flex; flex-direction: column; align-items: center; gap: var(--space-xs); padding: var(--space-lg); }
+.stat-icon { font-size: 1.5rem; }
+.stat-content { display: flex; flex-direction: column; align-items: center; gap: var(--space-xxs, 0.25rem); }
+.stat-label { font-size: var(--font-size-sm); color: var(--text-muted); white-space: nowrap; }
+.stat-value { font-size: var(--font-size-2xl); font-weight: 700; line-height: 1; }
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-lg);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.action-buttons { display: flex; flex-direction: column; gap: var(--space-sm); }
+
+.health-indicators { display: flex; flex-direction: column; gap: var(--space-md); }
+.health-item { display: flex; align-items: center; gap: var(--space-sm); }
+.health-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.health-status { margin-left: auto; font-size: var(--font-size-sm); color: var(--text-muted); }
+
+.activity-feed { display: flex; flex-direction: column; gap: var(--space-md); }
+.activity-item { display: flex; flex-direction: column; gap: var(--space-xs); padding: var(--space-sm); background: rgba(255,255,255,0.02); border-radius: var(--radius-sm); border-left: 3px solid var(--border); }
+.activity-time { font-size: var(--font-size-xs); color: var(--text-muted); }
+.activity-text { font-size: var(--font-size-sm); font-family: var(--font-mono); }
+
+@media (max-width: 1024px) {
+  .stats-grid { grid-template-columns: repeat(2, minmax(200px, 1fr)); }
+  .cards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .cards-grid { grid-template-columns: 1fr; }
+}
