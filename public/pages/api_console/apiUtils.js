@@ -8,14 +8,10 @@ export const appendOutput = (outputElement, msg, type = 'info') => {
 };
 
 export const makeRequest = async (outputElement, method, url, body = null) => {
-  try {
-    appendOutput(outputElement, `${method} ${url}`, 'info');
-    const res = await request(method, url, { body });
-    const statusText = res.ok ? 'success' : 'error';
-    const dataOut = typeof res.data === 'object' ? JSON.stringify(res.data, null, 2) : res.data;
-    appendOutput(outputElement, `Status: ${res.status} ${res.statusText}`, statusText);
-    appendOutput(outputElement, `Response: ${dataOut}`, statusText);
-  } catch (err) {
-    appendOutput(outputElement, `Error: ${err.message}`, 'error');
-  }
+  appendOutput(outputElement, `${method} ${url}`, 'info');
+  const res = await request(method, url, { body });
+  const statusText = res.ok ? 'success' : 'error';
+  const dataOut = typeof res.data === 'object' ? JSON.stringify(res.data, null, 2) : res.data;
+  appendOutput(outputElement, `Status: ${res.status} ${res.statusText}`, statusText);
+  appendOutput(outputElement, `Response: ${dataOut}`, statusText);
 };

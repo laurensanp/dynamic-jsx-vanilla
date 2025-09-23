@@ -42,7 +42,6 @@ Das Hauptziel des Projekts ist es, eine Plattform zum Testen und Überwachen von
 │   ├── index.html          # Main HTML file, the entry point for the SPA
 │   ├── app.js              # Core client-side application logic, orchestrates page loading
 │   ├── css/                # Global and component-specific stylesheets
-│   ├── assets/             # Static assets like images (e.g., logo.svg)
 │   ├── setup/              # Core client-side utilities for application setup
 │   │   ├── dom.js          # DOM manipulation helpers (modals, toasts)
 │   │   ├── layout.js       # Renders overall page layout (header, navigation)

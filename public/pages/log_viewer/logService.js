@@ -9,11 +9,15 @@ export async function fetchLogs(logs, filterLogsProxy) {
       logs = lines.map((line, idx) => parseLogLine(line, idx));
       if (logs.length > 1000) logs = logs.slice(-1000).map((l, i) => ({ ...l, index: i }));
       filterLogsProxy();
+      return { logs, success: true };
+    } else {
+      console.error('Failed to fetch logs:', res.statusText);
+      return { logs, success: false };
     }
   } catch (err) {
     console.error('Fehler beim Abrufen der Protokolle:', err);
+    return { logs, success: false };
   }
-  return logs;
 }
 
 export async function clearServerLogs(logs, filterLogsProxy) {

@@ -327,10 +327,15 @@ export function onMount(rootElement) {
   let logs = [];
   let filteredLogs = [];
   let logsInterval = null;
+  const logStatusIndicator = rootElement.querySelector('.status-indicator');
+  const logStatusText = rootElement.querySelector('.log-status span:last-child');
 
   const startLogRefresh = (interval) => {
     if (logsInterval) clearInterval(logsInterval);
     logsInterval = setInterval(fetchLogsProxy, interval);
+    logStatusIndicator.classList.add('active');
+    logStatusText.textContent = 'Live';
+    logOutput.classList.remove('hidden');
   };
 
   const stopLogRefresh = () => {
@@ -338,6 +343,9 @@ export function onMount(rootElement) {
       clearInterval(logsInterval);
       logsInterval = null;
     }
+    logStatusIndicator.classList.remove('active');
+    logStatusText.textContent = 'Getrennt';
+    logOutput.classList.add('hidden');
   };
 
   const filterLogsProxy = () => {
@@ -345,7 +353,11 @@ export function onMount(rootElement) {
   };
 
   const fetchLogsProxy = async () => {
-    logs = await fetchLogs(logs, filterLogsProxy);
+    const result = await fetchLogs(logs, filterLogsProxy);
+    logs = result.logs;
+    if (!result.success) {
+      stopLogRefresh();
+    }
   };
 
   levelFilter.addEventListener('change', filterLogsProxy);
@@ -360,8 +372,8 @@ export function onMount(rootElement) {
     downloadLogs(filteredLogs);
   });
 
-  fetchLogsProxy(); // Initial fetch
-  logsInterval = setInterval(fetchLogsProxy, LOG_REFRESH_INTERVAL_MS); // Continuous 1-second interval
+  fetchLogsProxy();
+  startLogRefresh(LOG_REFRESH_INTERVAL_MS); // 
   
   rootElement.addEventListener('unload', () => {
     if (logsInterval) {

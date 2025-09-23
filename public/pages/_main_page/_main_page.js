@@ -75,6 +75,7 @@ export function App() {
             <div class="health-item" id="health-item-monitor">
               <span class="health-dot" id="health-dot-monitor" style="background: var(--surface)"></span>
               <span>Überwachung</span>
+              <span class="health-status" id="health-status-monitor">Wird überprüft…</span>
             </div>
           </div>
         </div>
@@ -99,8 +100,35 @@ export function App() {
 }
 
 export function onMount(rootElement) {
-  setTimeout(() => { updateAllStats(dynamicStats); }, DASHBOARD_INITIAL_FETCH_DELAY_MS);
-  const statsInterval = setInterval(() => updateAllStats(dynamicStats), DASHBOARD_REFRESH_INTERVAL_MS);
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) updateAllStats(dynamicStats); });
-  window.addEventListener('beforeunload', () => { if (statsInterval) clearInterval(statsInterval); });
+  let dashboardInterval = null;
+  const statsGrid = rootElement.querySelector('.stats-grid');
+  const cardsGrid = rootElement.querySelector('.cards-grid');
+
+  const stopDashboardRefresh = () => {
+    if (dashboardInterval) {
+      clearInterval(dashboardInterval);
+      dashboardInterval = null;
+    }
+    statsGrid.classList.add('hidden');
+    cardsGrid.classList.add('hidden');
+  };
+
+  const startDashboardRefresh = (interval) => {
+    if (dashboardInterval) clearInterval(dashboardInterval);
+    dashboardInterval = setInterval(fetchDashboardStats, interval);
+    statsGrid.classList.remove('hidden');
+    cardsGrid.classList.remove('hidden');
+  };
+
+  const fetchDashboardStats = async () => {
+    const result = await updateAllStats(dynamicStats);
+    if (!result.success) {
+      stopDashboardRefresh();
+    }
+  };
+
+  setTimeout(fetchDashboardStats, DASHBOARD_INITIAL_FETCH_DELAY_MS);
+  startDashboardRefresh(DASHBOARD_REFRESH_INTERVAL_MS);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) fetchDashboardStats(); });
+  window.addEventListener('beforeunload', () => { if (dashboardInterval) clearInterval(dashboardInterval); });
 }

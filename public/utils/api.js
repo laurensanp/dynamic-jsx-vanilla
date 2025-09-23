@@ -39,7 +39,13 @@ export async function request(method, url, options = {}) {
     };
   } catch (error) {
     
-    throw new Error(error.message || 'Network error');
+    return {
+      ok: false,
+      status: 500,
+      statusText: 'Network error',
+      data: null,
+      headers: {},
+    };
   }
 }
 

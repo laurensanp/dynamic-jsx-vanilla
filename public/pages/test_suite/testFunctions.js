@@ -2,7 +2,8 @@ import { TEST_USERNAME, TEST_PASSWORD, CONCURRENT_USERS_COUNT, MEMORY_USAGE_REQU
 
 const testFunctions = {
   'GET /api/v1/hello': async () => {
-    await loginTestUser(); // Log in test user
+    const loginResult = await loginTestUser();
+    if (!loginResult.success) return { success: false, message: loginResult.message };
     return executeFetchTest('/api/v1/hello', { method: 'GET' }, 200, (res, data) => res.ok);
   },
   
@@ -22,7 +23,8 @@ const testFunctions = {
   },
   
   'GET /api/v1/users': async () => {
-    await loginTestUser(); // Log in test user
+    const loginResult = await loginTestUser();
+    if (!loginResult.success) return { success: false, message: loginResult.message };
     return executeFetchTest(
       '/api/v1/users',
       { method: 'GET' },
@@ -40,7 +42,8 @@ const testFunctions = {
     
     try {
       await fetch('/api/v1/meta/reset-test-state', { method: 'POST' }); // Reset test state
-      await loginTestUser(); // Log in test user
+      const loginResult = await loginTestUser();
+      if (!loginResult.success) throw new Error(loginResult.message);
       const createResponse = await fetch('/api/v1/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -195,7 +198,8 @@ const testFunctions = {
     const promises = [];
     
     await fetch('/api/v1/meta/reset-test-state', { method: 'POST' }); // Reset test state
-    await loginTestUser(); // Log in test user
+    const loginResult = await loginTestUser();
+    if (!loginResult.success) return { success: false, message: loginResult.message };
     for (let i = 0; i < NUM_USERS; i++) {
       const testUser = {
         name: `Concurrent User ${i}`,
@@ -226,7 +230,8 @@ const testFunctions = {
 
     try {
       await fetch('/api/v1/meta/reset-test-state', { method: 'POST' }); // Reset test state
-      await loginTestUser(); // Log in test user
+      const loginResult = await loginTestUser();
+      if (!loginResult.success) throw new Error(loginResult.message);
       // Create user
       const createResult = await executeFetchTest(
         '/api/v1/users',
@@ -307,7 +312,8 @@ const testFunctions = {
   },
 
   'Brute-Force Login Attempt': async () => {
-    await loginTestUser(); // Log in test user first
+    const loginResult = await loginTestUser();
+    if (!loginResult.success) return { success: false, message: loginResult.message };
     return executeFetchTest(
       '/api/v1/meta/run-brute-force-test',
       {
@@ -325,7 +331,8 @@ const testFunctions = {
 
     try {
       await fetch('/api/v1/meta/reset-test-state', { method: 'POST' }); // Reset test state
-      await loginTestUser(); // Log in test user
+      const loginResult = await loginTestUser();
+      if (!loginResult.success) throw new Error(loginResult.message);
       // Create data
       const createResult = await executeFetchTest(
         '/api/v1/data',
@@ -408,7 +415,8 @@ const testFunctions = {
     const largeData = { content: 'a'.repeat(LARGE_DATA_PAYLOAD_SIZE) }; // 500KB of data
 
     try {
-      await loginTestUser(); // Log in test user
+      const loginResult = await loginTestUser();
+      if (!loginResult.success) throw new Error(loginResult.message);
       const createResult = await executeFetchTest(
         '/api/v1/data',
         {
@@ -448,7 +456,8 @@ const testFunctions = {
 
     try {
       await fetch('/api/v1/meta/reset-test-state', { method: 'POST' }); // Reset test state
-      await loginTestUser(); // Log in test user
+      const loginResult = await loginTestUser();
+      if (!loginResult.success) throw new Error(loginResult.message);
       for (let i = 0; i < NUM_OPERATIONS; i++) {
         // Create user
         const createResult = await executeFetchTest(
@@ -507,17 +516,15 @@ async function executeFetchTest(url, options = {}, expectedStatus = 200, success
 }
 
 async function loginTestUser() {
-  return new Promise(async (resolve) => {
-    const response = await fetch('/api/v1/auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: TEST_USERNAME, password: TEST_PASSWORD })
-    });
-    if (!response.ok) {
-      throw new Error(`Failed to login test user: ${response.statusText}`);
-    }
-    resolve(response.json());
+  const response = await fetch('/api/v1/auth', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: TEST_USERNAME, password: TEST_PASSWORD })
   });
+  if (!response.ok) {
+    return { success: false, message: `Failed to login test user: ${response.statusText}` };
+  }
+  return { success: true, data: await response.json() };
 }
 
 export { testFunctions, executeFetchTest, loginTestUser };
