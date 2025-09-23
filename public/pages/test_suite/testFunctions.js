@@ -1,6 +1,6 @@
-import { TEST_USERNAME, TEST_PASSWORD, CONCURRENT_USERS_COUNT, MEMORY_USAGE_REQUESTS, CONCURRENT_USER_CREATION_COUNT, ENDPOINT_STRESS_TEST_REQUESTS, LARGE_DATA_PAYLOAD_SIZE, RESOURCE_EXHAUSTION_OPERATIONS } from '/public/settings/testSettings.js';
+import * as TestSettings from "/public/settings/testSettings.js";
 
-const testFunctions = {
+export const testFunctions = {
   'GET /api/v1/hello': async () => {
     const loginResult = await loginTestUser();
     if (!loginResult.success) return { success: false, message: loginResult.message };
@@ -15,7 +15,7 @@ const testFunctions = {
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: TEST_USERNAME, password: TEST_PASSWORD })
+        body: JSON.stringify({ username: TestSettings.TEST_USERNAME, password: TestSettings.TEST_PASSWORD })
       },
       200,
       (res, data) => res.ok && data.success === true
@@ -142,7 +142,7 @@ const testFunctions = {
     const start = performance.now();
     const promises = [];
     
-    for (let i = 0; i < CONCURRENT_USERS_COUNT; i++) { 
+    for (let i = 0; i < TestSettings.CONCURRENT_USERS_COUNT; i++) { 
       promises.push(executeFetchTest('/api/v1/hello', { method: 'GET' }, 200, (res, data) => res.ok));
     }
     
@@ -151,9 +151,9 @@ const testFunctions = {
     const successCount = results.filter(r => r.success).length;
     
     return {
-      success: successCount === CONCURRENT_USERS_COUNT && duration < 2000,
+      success: successCount === TestSettings.CONCURRENT_USERS_COUNT && duration < 2000,
       status: 200,
-      message: `${successCount}/${CONCURRENT_USERS_COUNT} Anfragen erfolgreich in ${Math.round(duration)}ms`,
+      message: `${successCount}/${TestSettings.CONCURRENT_USERS_COUNT} Anfragen erfolgreich in ${Math.round(duration)}ms`,
       expectedStatus: 200
     };
   },
@@ -161,7 +161,7 @@ const testFunctions = {
   'Memory Usage': async () => {
     
     const promises = [];
-    for (let i = 0; i < MEMORY_USAGE_REQUESTS; i++) {
+    for (let i = 0; i < TestSettings.MEMORY_USAGE_REQUESTS; i++) {
       promises.push(executeFetchTest('/api/v1/logs', { method: 'GET' }, 200, (res, data) => res.ok));
     }
     
@@ -169,15 +169,15 @@ const testFunctions = {
     const successCount = results.filter(r => r.success).length;
     
     return {
-      success: successCount === MEMORY_USAGE_REQUESTS,
+      success: successCount === TestSettings.MEMORY_USAGE_REQUESTS,
       status: 200,
-      message: `${successCount}/${MEMORY_USAGE_REQUESTS} speicherintensive Anfragen erfolgreich`,
+      message: `${successCount}/${TestSettings.MEMORY_USAGE_REQUESTS} speicherintensive Anfragen erfolgreich`,
       expectedStatus: 200
     };
   },
 
   'Endpoint Stress Test': async () => {
-    const NUM_REQUESTS = ENDPOINT_STRESS_TEST_REQUESTS;
+    const NUM_REQUESTS = TestSettings.ENDPOINT_STRESS_TEST_REQUESTS;
     const promises = [];
     for (let i = 0; i < NUM_REQUESTS; i++) {
       promises.push(executeFetchTest('/api/v1/health', { method: 'GET' }, 200, (res, data) => res.ok && res.status === 200));
@@ -194,7 +194,7 @@ const testFunctions = {
   },
 
   'Concurrent User Creation': async () => {
-    const NUM_USERS = CONCURRENT_USER_CREATION_COUNT;
+    const NUM_USERS = TestSettings.CONCURRENT_USER_CREATION_COUNT;
     const promises = [];
     
     await fetch('/api/v1/meta/reset-test-state', { method: 'POST' });
@@ -400,7 +400,7 @@ const testFunctions = {
     }
   },
   'Large Data Payload Test': async () => {
-    const largeData = { content: 'a'.repeat(LARGE_DATA_PAYLOAD_SIZE) };
+    const largeData = { content: 'a'.repeat(TestSettings.LARGE_DATA_PAYLOAD_SIZE) };
 
     try {
       const loginResult = await loginTestUser();
@@ -438,7 +438,7 @@ const testFunctions = {
     }
   },
   'Resource Exhaustion Test': async () => {
-    const NUM_OPERATIONS = RESOURCE_EXHAUSTION_OPERATIONS;
+    const NUM_OPERATIONS = TestSettings.RESOURCE_EXHAUSTION_OPERATIONS;
     const userIds = [];
 
     try {
@@ -487,7 +487,7 @@ const testFunctions = {
 
 testFunctions['Resource Exhaustion Test'] = testFunctions['Resource Exhaustion Test'];
 
-async function executeFetchTest(url, options = {}, expectedStatus = 200, successCondition = (res, data) => res.ok) {
+export async function executeFetchTest(url, options = {}, expectedStatus = 200, successCondition = (res, data) => res.ok) {
   const response = await fetch(url, options);
   const data = await response.json();
 
@@ -500,16 +500,14 @@ async function executeFetchTest(url, options = {}, expectedStatus = 200, success
   };
 }
 
-async function loginTestUser() {
+export async function loginTestUser() {
   const response = await fetch('/api/v1/auth', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: TEST_USERNAME, password: TEST_PASSWORD })
+    body: JSON.stringify({ username: TestSettings.TEST_USERNAME, password: TestSettings.TEST_PASSWORD })
   });
   if (!response.ok) {
     return { success: false, message: `Failed to login test user: ${response.statusText}` };
   }
   return { success: true, data: await response.json() };
 }
-
-export { testFunctions, executeFetchTest, loginTestUser };

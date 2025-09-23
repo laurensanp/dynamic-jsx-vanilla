@@ -1,13 +1,13 @@
 const fs = require("fs");
-const { LOG_FILENAME, LOG_FILE_DELETE_ERROR, LOG_FILE_WRITE_ERROR } = require("../settings/serverLoggerSettings");
+const ServerLoggerSettings = require("../settings/serverLoggerSettings");
 
-const LOG_FILE = LOG_FILENAME;
+const LOG_FILE = ServerLoggerSettings.LOG_FILENAME;
 try {
   if (fs.existsSync(LOG_FILE)) {
     fs.unlinkSync(LOG_FILE);
   }
 } catch (err) {
-  console.error(`${LOG_FILE_DELETE_ERROR} ${err.message}`);
+  console.error(`${ServerLoggerSettings.LOG_FILE_DELETE_ERROR} ${err.message}`);
 }
 
 const originalLog = console.log.bind(console);
@@ -27,7 +27,7 @@ const createLogger = (originalConsoleMethod, type, category = '') => (...args) =
   originalConsoleMethod(formattedMessage);
   fs.appendFile(LOG_FILE, formattedMessage + '\n', (err) => {
     if (err) {
-      originalError(`${LOG_FILE_WRITE_ERROR} ${err.message}`);
+      originalError(`${ServerLoggerSettings.LOG_FILE_WRITE_ERROR} ${err.message}`);
     }
   });
 };

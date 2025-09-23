@@ -1,7 +1,7 @@
 import { html } from "../../setup/dom.js";
 import { tailLogs, filterLogs, renderLogs, updateStats, formatTimestampText, downloadLogs } from "./logUtils.js";
 import { fetchLogs, clearServerLogs } from "./logService.js";
-import { LOG_REFRESH_INTERVAL_MS, LOG_MAX_LINES } from "../../settings/log_viewerSettings.js";
+import * as LogViewerSettings from "../../settings/log_viewerSettings.js";
 
 export function App() {
   
@@ -147,7 +147,7 @@ export function onMount(rootElement) {
   });
 
   fetchLogsProxy();
-  startLogRefresh(LOG_REFRESH_INTERVAL_MS);
+  startLogRefresh(LogViewerSettings.LOG_REFRESH_INTERVAL_MS);
   
   rootElement.addEventListener('unload', () => {
     if (logsInterval) {

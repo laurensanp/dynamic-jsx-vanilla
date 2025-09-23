@@ -1,4 +1,4 @@
-import { PAGE_MODULE_BASE_PATH, DEFAULT_PAGE_TITLE_SUFFIX, LOADING_HTML, PAGE_LOAD_ERROR_HTML } from "../settings/pageSwitchSettings.js";
+import * as PageSwitchSettings from "../settings/pageSwitchSettings.js";
 let currentPageId = null;
 
 let currentCssLink = null;
@@ -24,7 +24,7 @@ function loadCssForPage(cssPath) {
 export async function setupPageSwitching(root, pagesConfig, onPageChange = null) {
   
   function showLoading() {
-    root.innerHTML = LOADING_HTML;
+    root.innerHTML = PageSwitchSettings.LOADING_HTML;
   }
   
   
@@ -37,7 +37,7 @@ export async function setupPageSwitching(root, pagesConfig, onPageChange = null)
         await loadCssForPage(config.cssPath);
       }
       
-      fullModulePath = PAGE_MODULE_BASE_PATH + config.modulePath;
+      fullModulePath = PageSwitchSettings.PAGE_MODULE_BASE_PATH + config.modulePath;
       const module = await import(fullModulePath);
       root.innerHTML = '';
       const pageContent = module.App();
@@ -54,7 +54,7 @@ export async function setupPageSwitching(root, pagesConfig, onPageChange = null)
       
       
       if (config.title) {
-        document.title = `${config.title}${DEFAULT_PAGE_TITLE_SUFFIX}`;
+        document.title = `${config.title}${PageSwitchSettings.DEFAULT_PAGE_TITLE_SUFFIX}`;
       }
       
       
@@ -63,7 +63,7 @@ export async function setupPageSwitching(root, pagesConfig, onPageChange = null)
       }
     } catch (error) {
       console.error(`Failed to load page: ${fullModulePath}`, error);
-      root.innerHTML = PAGE_LOAD_ERROR_HTML;
+      root.innerHTML = PageSwitchSettings.PAGE_LOAD_ERROR_HTML;
     }
   }
 

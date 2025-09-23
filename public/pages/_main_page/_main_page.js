@@ -1,7 +1,7 @@
 import { html } from "../../setup/dom.js";
 import { updateStat } from "./dashboardUtils.js";
 import { updateAllStats } from "./dashboardService.js";
-import { DASHBOARD_INITIAL_FETCH_DELAY_MS, DASHBOARD_REFRESH_INTERVAL_MS } from "../../settings/_main_pageSettings.js";
+import * as MainPageSettings from "../../settings/_main_pageSettings.js";
 
 let dynamicStats = {
   apiEndpoints: 0,
@@ -126,8 +126,8 @@ export function onMount(rootElement) {
     }
   };
 
-  setTimeout(fetchDashboardStats, DASHBOARD_INITIAL_FETCH_DELAY_MS);
-  startDashboardRefresh(DASHBOARD_REFRESH_INTERVAL_MS);
+  setTimeout(fetchDashboardStats, MainPageSettings.DASHBOARD_INITIAL_FETCH_DELAY_MS);
+  startDashboardRefresh(MainPageSettings.DASHBOARD_REFRESH_INTERVAL_MS);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) fetchDashboardStats(); });
   window.addEventListener('beforeunload', () => { if (dashboardInterval) clearInterval(dashboardInterval); });
 }

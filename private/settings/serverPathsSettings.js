@@ -1,1 +1,3 @@
-export const PUBLIC_INDEX_HTML_PATH = "../../public/index.html";
+module.exports = {
+  PUBLIC_INDEX_HTML_PATH: "../../public/index.html",
+};

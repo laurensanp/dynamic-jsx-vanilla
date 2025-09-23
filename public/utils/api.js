@@ -1,11 +1,11 @@
-import { DEFAULT_FETCH_CREDENTIALS, DEFAULT_FETCH_CACHE, DEFAULT_CONTENT_TYPE_JSON } from "../settings/apiSettings.js";
+import * as ApiSettings from "../settings/apiSettings.js";
 
 export async function request(method, url, options = {}) {
   const {
     body = null,
     headers = {},
-    credentials = DEFAULT_FETCH_CREDENTIALS,
-    cache = DEFAULT_FETCH_CACHE,
+    credentials = ApiSettings.DEFAULT_FETCH_CREDENTIALS,
+    cache = ApiSettings.DEFAULT_FETCH_CACHE,
   } = options;
 
   const init = {
@@ -17,8 +17,8 @@ export async function request(method, url, options = {}) {
 
   if (body != null) {
     if (typeof body === 'object' && !(body instanceof FormData)) {
-      if (!init.headers['Content-Type']) init.headers['Content-Type'] = DEFAULT_CONTENT_TYPE_JSON;
-      init.body = init.headers['Content-Type'].includes(DEFAULT_CONTENT_TYPE_JSON) ? JSON.stringify(body) : body;
+      if (!init.headers['Content-Type']) init.headers['Content-Type'] = ApiSettings.DEFAULT_CONTENT_TYPE_JSON;
+      init.body = init.headers['Content-Type'].includes(ApiSettings.DEFAULT_CONTENT_TYPE_JSON) ? JSON.stringify(body) : body;
     } else {
       init.body = body;
     }

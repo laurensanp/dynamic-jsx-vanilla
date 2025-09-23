@@ -1,4 +1,4 @@
-import { DEFAULT_MODAL_TITLE, DEFAULT_MODAL_BUTTONS, DEFAULT_MODAL_CLOSABLE, DEFAULT_MODAL_SIZE, DEFAULT_TOAST_TYPE, DEFAULT_TOAST_DURATION, DEFAULT_TOAST_POSITION, TOAST_ICONS } from "../settings/domSettings.js";
+import * as DomSettings from "../settings/domSettings.js";
 
 export function html(strings, ...values) {
   const template = strings.reduce((acc, str, i) => acc + str + (values[i] ?? ""), "");
@@ -57,11 +57,11 @@ export function createElement(tag, attributes = {}, content = '') {
 
 export function createModal(options = {}) {
   const {
-    title = DEFAULT_MODAL_TITLE,
+    title = DomSettings.DEFAULT_MODAL_TITLE,
     content = '',
-    buttons = DEFAULT_MODAL_BUTTONS,
-    closable = DEFAULT_MODAL_CLOSABLE,
-    size = DEFAULT_MODAL_SIZE
+    buttons = DomSettings.DEFAULT_MODAL_BUTTONS,
+    closable = DomSettings.DEFAULT_MODAL_CLOSABLE,
+    size = DomSettings.DEFAULT_MODAL_SIZE
   } = options;
   
   const modal = html`
@@ -184,12 +184,12 @@ export function createModal(options = {}) {
 
 export function showToast(message, options = {}) {
   const {
-    type = DEFAULT_TOAST_TYPE,
-    duration = DEFAULT_TOAST_DURATION,
-    position = DEFAULT_TOAST_POSITION
+    type = DomSettings.DEFAULT_TOAST_TYPE,
+    duration = DomSettings.DEFAULT_TOAST_DURATION,
+    position = DomSettings.DEFAULT_TOAST_POSITION
   } = options;
   
-  const icons = TOAST_ICONS;
+  const icons = DomSettings.TOAST_ICONS;
   
   const toast = createElement('div', {
     className: `toast toast-${type} toast-${position}`,

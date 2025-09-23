@@ -2,8 +2,8 @@ import { html } from "../../setup/dom.js";
 import { testSuites } from './testData.js';
 import { calculateStats, updateStatsDisplay, getStatusIcon, addOutput, updateTestItemUI, resetTestResultsUI } from './testUtils.js';
 import { testFunctions, executeFetchTest, loginTestUser } from './testFunctions.js';
-import * as testConfig from '/public/settings/testSettings.js';
-import * as settings from '../../settings/settings.js';
+import * as TestSettings from "../../settings/testSettings.js";
+import * as Settings from "../../settings/settings.js";
 
 export function App() {
   
@@ -146,7 +146,7 @@ export function App() {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: testConfig.TEST_USERNAME, password: testConfig.TEST_PASSWORD })
+          body: JSON.stringify({ username: TestSettings.TEST_USERNAME, password: TestSettings.TEST_PASSWORD })
         },
         200,
         (res, data) => res.ok && data.success === true
@@ -271,7 +271,7 @@ export function App() {
       const start = performance.now();
       const promises = [];
       
-      for (let i = 0; i < testConfig.CONCURRENT_USERS_COUNT; i++) { 
+      for (let i = 0; i < TestSettings.CONCURRENT_USERS_COUNT; i++) { 
         promises.push(executeFetchTest('/api/v1/hello', { method: 'GET' }, 200, (res, data) => res.ok));
       }
       
@@ -280,9 +280,9 @@ export function App() {
       const successCount = results.filter(r => r.success).length;
       
       return {
-        success: successCount === testConfig.CONCURRENT_USERS_COUNT && duration < 2000,
+        success: successCount === TestSettings.CONCURRENT_USERS_COUNT && duration < 2000,
         status: 200,
-        message: `${successCount}/${testConfig.CONCURRENT_USERS_COUNT} Anfragen erfolgreich in ${Math.round(duration)}ms`,
+        message: `${successCount}/${TestSettings.CONCURRENT_USERS_COUNT} Anfragen erfolgreich in ${Math.round(duration)}ms`,
         expectedStatus: 200
       };
     },
@@ -290,7 +290,7 @@ export function App() {
     'Memory Usage': async () => {
       
       const promises = [];
-      for (let i = 0; i < testConfig.MEMORY_USAGE_REQUESTS; i++) {
+      for (let i = 0; i < TestSettings.MEMORY_USAGE_REQUESTS; i++) {
         promises.push(executeFetchTest('/api/v1/logs', { method: 'GET' }, 200, (res, data) => res.ok));
       }
       
@@ -298,15 +298,15 @@ export function App() {
       const successCount = results.filter(r => r.success).length;
       
       return {
-        success: successCount === testConfig.MEMORY_USAGE_REQUESTS,
+        success: successCount === TestSettings.MEMORY_USAGE_REQUESTS,
         status: 200,
-        message: `${successCount}/${testConfig.MEMORY_USAGE_REQUESTS} speicherintensive Anfragen erfolgreich`,
+        message: `${successCount}/${TestSettings.MEMORY_USAGE_REQUESTS} speicherintensive Anfragen erfolgreich`,
         expectedStatus: 200
       };
     },
 
     'Endpoint Stress Test': async () => {
-      const NUM_REQUESTS = testConfig.ENDPOINT_STRESS_TEST_REQUESTS;
+      const NUM_REQUESTS = TestSettings.ENDPOINT_STRESS_TEST_REQUESTS;
       const promises = [];
       for (let i = 0; i < NUM_REQUESTS; i++) {
         promises.push(executeFetchTest('/api/v1/health', { method: 'GET' }, 200, (res, data) => res.ok && res.status === 200));
@@ -323,7 +323,7 @@ export function App() {
     },
 
     'Concurrent User Creation': async () => {
-      const NUM_USERS = testConfig.CONCURRENT_USER_CREATION_COUNT;
+      const NUM_USERS = TestSettings.CONCURRENT_USER_CREATION_COUNT;
       const promises = [];
       
       await fetch('/api/v1/meta/reset-test-state', { method: 'POST' });
@@ -526,7 +526,7 @@ export function App() {
       }
     },
     'Large Data Payload Test': async () => {
-      const largeData = { content: 'a'.repeat(testConfig.LARGE_DATA_PAYLOAD_SIZE) };
+      const largeData = { content: 'a'.repeat(TestSettings.LARGE_DATA_PAYLOAD_SIZE) };
 
       try {
         await loginTestUser();
@@ -563,7 +563,7 @@ export function App() {
       }
     },
     'Resource Exhaustion Test': async () => {
-      const NUM_OPERATIONS = testConfig.RESOURCE_EXHAUSTION_OPERATIONS;
+      const NUM_OPERATIONS = TestSettings.RESOURCE_EXHAUSTION_OPERATIONS;
       const userIds = [];
 
       try {

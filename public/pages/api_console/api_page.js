@@ -1,7 +1,7 @@
 import { html } from "../../setup/dom.js";
 import { appendOutput, makeRequest } from "./apiUtils.js";
 import { fetchEndpoints } from "./apiService.js";
-import { API_CONSOLE_TEXTAREA_DEFAULT_ROWS } from "../../settings/api_consoleSettings.js";
+import * as ApiConsoleSettings from "../../settings/api_consoleSettings.js";
 
 export function App() {
   const pageContent = html`
@@ -31,7 +31,7 @@ export function App() {
                 <input id="url_input" type="text" placeholder="/api/v1/endpoint" class="url-input" />
                 <button id="custom_send_btn" class="btn btn-secondary">Senden</button>
               </div>
-              <textarea id="body_input" placeholder="Anfragetext (JSON)" rows="${API_CONSOLE_TEXTAREA_DEFAULT_ROWS}" style="margin-top: var(--space-sm); width: 100%;"></textarea>
+              <textarea id="body_input" placeholder="Anfragetext (JSON)" rows="${ApiConsoleSettings.API_CONSOLE_TEXTAREA_DEFAULT_ROWS}" style="margin-top: var(--space-sm); width: 100%;"></textarea>
             </div>
           </div>
 
