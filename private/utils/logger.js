@@ -9,7 +9,6 @@ try {
 } catch (err) {
   console.error(`${LOG_FILE_DELETE_ERROR} ${err.message}`);
 }
-// The log file will now persist across server restarts.
 
 const originalLog = console.log.bind(console);
 const originalError = console.error.bind(console);
@@ -24,9 +23,6 @@ function formatLogMessage(type, category, ...args) {
 }
 
 const createLogger = (originalConsoleMethod, type, category = '') => (...args) => {
-  // Old dynamic category parsing removed as it was not being used as intended
-  // and could cause issues if messages started with all-caps words.
-  // All categories are now explicitly set during customConsole definition.
   const formattedMessage = formatLogMessage(type, category, ...args);
   originalConsoleMethod(formattedMessage);
   fs.appendFile(LOG_FILE, formattedMessage + '\n', (err) => {

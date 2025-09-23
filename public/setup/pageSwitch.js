@@ -1,6 +1,26 @@
 import { PAGE_MODULE_BASE_PATH, DEFAULT_PAGE_TITLE_SUFFIX, LOADING_HTML, PAGE_LOAD_ERROR_HTML } from "../settings/pageSwitchSettings.js";
 let currentPageId = null;
 
+let currentCssLink = null;
+
+function loadCssForPage(cssPath) {
+  return new Promise((resolve, reject) => {
+    if (currentCssLink) {
+      currentCssLink.remove();
+    }
+
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = cssPath;
+    link.onload = () => {
+      currentCssLink = link;
+      resolve();
+    };
+    link.onerror = () => reject(new Error(`Failed to load CSS: ${cssPath}`));
+    document.head.appendChild(link);
+  });
+}
+
 export async function setupPageSwitching(root, pagesConfig, onPageChange = null) {
   
   function showLoading() {
@@ -9,23 +29,25 @@ export async function setupPageSwitching(root, pagesConfig, onPageChange = null)
   
   
   async function loadPage(config) {
-    let fullModulePath; // Declare outside try block
+    let fullModulePath;
     try {
       showLoading();
-      fullModulePath = PAGE_MODULE_BASE_PATH + config.modulePath; // Assign value inside try block
-      const module = await import(fullModulePath);
-      root.innerHTML = ''; // Clear existing content
-      const pageContent = module.App();
-      root.appendChild(pageContent); // Append new content
-      currentPageId = config.buttonId;
-      // setActiveNavButton(config.buttonId); // Removed direct call
 
-      // Call onMount if it exists
+      if (config.cssPath) {
+        await loadCssForPage(config.cssPath);
+      }
+      
+      fullModulePath = PAGE_MODULE_BASE_PATH + config.modulePath;
+      const module = await import(fullModulePath);
+      root.innerHTML = '';
+      const pageContent = module.App();
+      root.appendChild(pageContent);
+      currentPageId = config.buttonId;
+
       if (typeof module.onMount === 'function') {
         module.onMount(root);
       }
 
-      // Call onPageChange (which is setActiveNavButton) after content is mounted
       if (onPageChange) {
         onPageChange(config.buttonId);
       }

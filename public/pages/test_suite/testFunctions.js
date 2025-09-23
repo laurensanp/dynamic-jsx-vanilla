@@ -41,7 +41,7 @@ const testFunctions = {
     };
     
     try {
-      await fetch('/api/v1/meta/reset-test-state', { method: 'POST' }); // Reset test state
+      await fetch('/api/v1/meta/reset-test-state', { method: 'POST' });
       const loginResult = await loginTestUser();
       if (!loginResult.success) throw new Error(loginResult.message);
       const createResponse = await fetch('/api/v1/users', {
@@ -197,7 +197,7 @@ const testFunctions = {
     const NUM_USERS = CONCURRENT_USER_CREATION_COUNT;
     const promises = [];
     
-    await fetch('/api/v1/meta/reset-test-state', { method: 'POST' }); // Reset test state
+    await fetch('/api/v1/meta/reset-test-state', { method: 'POST' });
     const loginResult = await loginTestUser();
     if (!loginResult.success) return { success: false, message: loginResult.message };
     for (let i = 0; i < NUM_USERS; i++) {
@@ -229,10 +229,9 @@ const testFunctions = {
     let userId;
 
     try {
-      await fetch('/api/v1/meta/reset-test-state', { method: 'POST' }); // Reset test state
+      await fetch('/api/v1/meta/reset-test-state', { method: 'POST' });
       const loginResult = await loginTestUser();
       if (!loginResult.success) throw new Error(loginResult.message);
-      // Create user
       const createResult = await executeFetchTest(
         '/api/v1/users',
         {
@@ -240,13 +239,12 @@ const testFunctions = {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(testUser)
         },
-        201, // Expected status for creation
+        201,
         (res, data) => res.ok
       );
       if (!createResult.success) throw new Error(createResult.message || 'Failed to create user');
       userId = createResult.data.user.id;
 
-      // Read user
       const readResult = await executeFetchTest(
         `/api/v1/users/${userId}`,
         { method: 'GET' },
@@ -255,7 +253,6 @@ const testFunctions = {
       );
       if (!readResult.success) throw new Error(readResult.message || 'Failed to read user or data mismatch');
 
-      // Update user
       const updatedUser = { ...testUser, name: 'Updated CRUD User' };
       const updateResult = await executeFetchTest(
         `/api/v1/users/${userId}`,
@@ -277,7 +274,6 @@ const testFunctions = {
       );
       if (!checkUpdateResult.success) throw new Error(checkUpdateResult.message || 'Update verification failed');
 
-      // Delete user
       const deleteResult = await executeFetchTest(
         `/api/v1/users/${userId}`,
         { method: 'DELETE' },
@@ -300,12 +296,10 @@ const testFunctions = {
         expectedStatus: 200
       };
     } finally {
-      // Ensure cleanup even if test fails midway
       if (userId) {
         try {
           await fetch(`/api/v1/meta/cleanup-user/${userId}`, { method: 'POST' });
         } catch (e) {
-          // Expected 404s from server-side cleanup should not be logged as errors
         }
       }
     }
@@ -330,10 +324,9 @@ const testFunctions = {
     let dataId;
 
     try {
-      await fetch('/api/v1/meta/reset-test-state', { method: 'POST' }); // Reset test state
+      await fetch('/api/v1/meta/reset-test-state', { method: 'POST' });
       const loginResult = await loginTestUser();
       if (!loginResult.success) throw new Error(loginResult.message);
-      // Create data
       const createResult = await executeFetchTest(
         '/api/v1/data',
         {
@@ -347,7 +340,6 @@ const testFunctions = {
       if (!createResult.success) throw new Error(createResult.message || 'Failed to create data');
       dataId = createResult.data.data.id;
 
-      // Read data
       const readResult = await executeFetchTest(
         `/api/v1/data/${dataId}`,
         { method: 'GET' },
@@ -356,7 +348,6 @@ const testFunctions = {
       );
       if (!readResult.success) throw new Error(readResult.message || 'Failed to read data or data mismatch');
 
-      // Update data
       const updatedData = { ...testData, value: 'Updated Data' };
       const updateResult = await executeFetchTest(
         `/api/v1/data/${dataId}`,
@@ -378,7 +369,6 @@ const testFunctions = {
       );
       if (!checkUpdateResult.success) throw new Error(checkUpdateResult.message || 'Update verification failed');
 
-      // Delete data
       const deleteResult = await executeFetchTest(
         `/api/v1/data/${dataId}`,
         { method: 'DELETE' },
@@ -401,18 +391,16 @@ const testFunctions = {
         expectedStatus: 200
       };
     } finally {
-      // Ensure cleanup even if test fails midway
       if (dataId) {
         try {
           await fetch(`/api/v1/meta/cleanup-data/${dataId}`, { method: 'POST' });
         } catch (e) {
-          // Expected 404s from server-side cleanup should not be logged as errors
         }
       }
     }
   },
   'Large Data Payload Test': async () => {
-    const largeData = { content: 'a'.repeat(LARGE_DATA_PAYLOAD_SIZE) }; // 500KB of data
+    const largeData = { content: 'a'.repeat(LARGE_DATA_PAYLOAD_SIZE) };
 
     try {
       const loginResult = await loginTestUser();
@@ -430,7 +418,6 @@ const testFunctions = {
 
       if (!createResult.success) throw new Error(createResult.message || 'Failed to send large data or data not processed correctly');
 
-      // Cleanup if a specific ID is returned and can be deleted
       if (createResult.data && createResult.data.data && createResult.data.data.id) {
         await fetch(`/api/v1/data/${createResult.data.data.id}`, { method: 'DELETE' });
       }
@@ -455,11 +442,10 @@ const testFunctions = {
     const userIds = [];
 
     try {
-      await fetch('/api/v1/meta/reset-test-state', { method: 'POST' }); // Reset test state
+      await fetch('/api/v1/meta/reset-test-state', { method: 'POST' });
       const loginResult = await loginTestUser();
       if (!loginResult.success) throw new Error(loginResult.message);
       for (let i = 0; i < NUM_OPERATIONS; i++) {
-        // Create user
         const createResult = await executeFetchTest(
           '/api/v1/users',
           {
@@ -473,7 +459,6 @@ const testFunctions = {
         if (!createResult.success) throw new Error(createResult.message || `Failed to create user ${i}`);
         userIds.push(createResult.data.user.id);
 
-        // Delete user immediately
         const deleteResult = await executeFetchTest(
           `/api/v1/users/${createResult.data.user.id}`,
           { method: 'DELETE' },
@@ -511,7 +496,7 @@ async function executeFetchTest(url, options = {}, expectedStatus = 200, success
     status: response.status,
     message: data.message || `API-Anfrage an ${url} abgeschlossen`,
     expectedStatus: expectedStatus,
-    data: data // Store the full response data
+    data: data
   };
 }
 

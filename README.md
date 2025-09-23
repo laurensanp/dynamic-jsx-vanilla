@@ -32,7 +32,8 @@ Das Hauptziel des Projekts ist es, eine Plattform zum Testen und Überwachen von
 ### 2. Schlüsseltechnologien
 *   **Backend**: Node.js mit dem Express.js-Framework für den API-Server.
 *   **Frontend**: Reines HTML, CSS und JavaScript für eine clientseitige Anwendung, die die API-Konsole, die Test-Suite und die Systemprotokolle anzeigt.
-*   **Styling**: Modernes CSS mit Variablen für Design-Tokens und einer modularen Struktur.
+*   **Styling**: Modernes CSS mit Variablen für Design-Tokens und einer modularen St
+ruktur.
 *   **Testing**: Jest für Unit- und Integrationstests.
 
 ### 3. Dateistruktur
@@ -156,4 +157,50 @@ In unserer letzten Interaktion wurden folgende wichtige Änderungen vorgenommen:
 *   **Refaktorierung der Einstellungen**: Alle anwendungsweiten Einstellungen wurden in dedizierte `settings` Ordner sowohl im `public/` als auch im `private/` Verzeichnis verschoben und in modularen Dateien organisiert (z.B. `apiSettings.js`, `authSettings.js`, `_main_pageSettings.js`). Dies zentralisiert die Konfiguration und verbessert die Wartbarkeit.
 *   **Verbesserte DOM-Interaktionen**: Die Logik für DOM-Elementabfragen und Event-Listener-Zuweisungen wurde in die `onMount` Funktionen der Seitenmodule (`api_page.js`, `log_page.js`) verschoben, um sicherzustellen, dass DOM-Elemente vor dem Zugriff vollständig gerendert sind. Dies behebt Fehler im Zusammenhang mit undefinierten Elementen.
 *   **Konsistente Funktionsparameter**: Die Parameterübergabe an Utility-Funktionen, insbesondere in `logUtils.js`, wurde korrigiert, um die korrekte Übergabe von DOM-Elementen und anderen Werten sicherzustellen, wodurch `TypeError`-Fehler behoben wurden.
+
+### 6. Code-Ausführungsfluss (ausgehend von main.js)
+
+```
+main.js (Hauptserver-Einstiegspunkt für die "ts – API Konsole")
+├── Initialisiert Express-App (Backend API-Server für Test- und Überwachungsplattform)
+├── Verwendet Middleware (verarbeitet HTTP-Anfragen):
+│   ├── cors
+│   ├── express.json (für JSON-Anfragen bis 1MB)
+│   ├── cookie-parser
+│   └── private/middleware/auth.js (Authentifizierungs-Middleware, z.B. getIp für IP-Erkennung)
+├── Lädt und konfiguriert Logger:
+│   └── private/utils/logger.js (Benutzerdefiniertes Logging mit Zeitstempel, Typ und optionaler Kategorie in Konsole und server.log)
+├── Lädt Router-Utilities:
+│   └── private/utils/routerUtils.js (Für getAllEndpoints, um alle API-Endpunkte zu sammeln)
+├── Dient statische Frontend-Dateien:
+│   └── public/ (Client-side Code - Vanilla-JS-Frontend-Oberfläche für API-Konsole, Test-Suite, Protokolle)
+│       ├── index.html (Main HTML file, Einstiegspunkt für die SPA)
+│       ├── app.js (Kern client-side Anwendungslogik, orchestriert das Laden der Seiten)
+│       ├── css/ (Global und Komponenten-spezifische Stylesheets für modernes Styling mit CSS-Variablen)
+│       ├── setup/ (Kern client-side Utilities für die Anwendungseinrichtung)
+│       │   ├── dom.js (DOM-Manipulation wie Modals, Toasts)
+│       │   ├── layout.js (Rendert Gesamtseitenlayout: Header, Navigation)
+│       │   ├── navigation.js (Verwaltet aktive Navigationsbutton-Zustände)
+│       │   └── pageSwitch.js (Manages dynamisches Laden und Wechseln von Seiten – Kern clientseitige Navigation)
+│       ├── pages/ (Individuelle Seitenmodule, dynamisch geladen durch pageSwitch.js)
+│       │   ├── _main_page/ (Dashboard-Seite: _main_page.js, dashboardService.js, dashboardUtils.js)
+│       │   ├── api_console/ (API Konsole Seite: api_page.js, apiService.js, apiUtils.js für interaktive API-Anfragen)
+│       │   ├── log_viewer/ (System Logs Viewer Seite: log_page.js, logService.js, logUtils.js für Echtzeit-Serverprotokolle)
+│       │   └── test_suite/ (Test Suite Seite: test_page.js, testFunctions.js, testData.js für API-, Integrations- und Leistungstests)
+│       ├── settings/ (Zentralisierte client-side Konfigurationsdateien: app, api, auth, dom, layout, _main_page, pageSwitch, test, settings, theme)
+│       └── utils/ (Allgemeine client-side Utility-Funktionen)
+│           ├── api.js (Generische API-Interaktionsfunktionen)
+│           ├── logout.js (Logout-Funktionalität)
+│           └── theme.js (Theme-Switching-Logik, Standard ist Dark Theme)
+├── Lädt und bindet Backend-Routen:
+│   └── private/routes/ (API Routen-Definitionen für Express)
+│       ├── index.js (Aggregiert alle anderen Routen)
+│       ├── authRoutes.js (Authentifizierungs-Endpunkte: Login, Logout)
+│       ├── data.js (Datenverwaltungs-Endpunkte)
+│       ├── meta.js (Metadaten- und Server-Kontroll-Endpunkte, z.B. Shutdown, Health Checks)
+│       └── users.js (Benutzerverwaltungs-Endpunkte: CRUD-Operationen für Benutzer)
+├── Definiert Meta-Endpunkt:
+│   └── GET /api/v1/meta/endpoints (Gibt eine Liste aller definierten API-Endpunkte zurück)
+└── Startet den HTTP-Server (Auf http://localhost:8000, protokolliert mit console.log.server)
+```
 

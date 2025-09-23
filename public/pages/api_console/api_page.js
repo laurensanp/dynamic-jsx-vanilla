@@ -4,8 +4,7 @@ import { fetchEndpoints } from "./apiService.js";
 import { API_CONSOLE_TEXTAREA_DEFAULT_ROWS } from "../../settings/api_consoleSettings.js";
 
 export function App() {
-  const page = html`
-    <link rel="stylesheet" href="/public/pages/api_console/api_console.css">
+  const pageContent = html`
     <div class="api-console">
       <div class="api-header">
         <h1>API-Konsole</h1>
@@ -90,7 +89,7 @@ export function App() {
     </div>
   `;
 
-  return page;
+  return pageContent;
 }
 
 export function onMount(rootElement) {

@@ -6,7 +6,7 @@ const child_process = require("child_process");
 const fs = require("fs");
 const { LOG_FILE } = require("../utils/logger");
 const { resetLoginAttempts } = require("../utils/authUtils");
-const http = require("http"); // Import http module
+const http = require("http");
 const { HELLO_ENDPOINT, HEALTH_ENDPOINT, HEALTH_FULL_ENDPOINT, RESET_LOGIN_ATTEMPTS_ENDPOINT, RESET_TEST_STATE_ENDPOINT, RUN_BRUTE_FORCE_TEST_ENDPOINT, LOG_SIZE_ENDPOINT, CLEANUP_USER_ENDPOINT, CLEANUP_DATA_ENDPOINT, TEST_ERROR_ENDPOINT, SHUTDOWN_ENDPOINT, LOGS_ENDPOINT, HELLO_MESSAGE, HEALTH_STATUS_MESSAGE, HEALTH_FULL_ERROR_MESSAGE, RESET_LOGIN_ATTEMPTS_MESSAGE, RESET_TEST_STATE_MESSAGE, BRUTE_FORCE_FAILED_MESSAGE, LOG_SIZE_ERROR_MESSAGE, USER_CLEANUP_SUCCESS_MESSAGE, USER_CLEANUP_NOT_FOUND_MESSAGE, DATA_CLEANUP_SUCCESS_MESSAGE, DATA_CLEANUP_NOT_FOUND_MESSAGE, TEST_ERROR_MESSAGE, SHUTDOWN_TEST_SUCCESS_MESSAGE, SHUTDOWN_INITIATED_MESSAGE, SHUTDOWN_COMMAND_FAILED_MESSAGE, SHUTDOWN_INITIATED_LOG_MESSAGE, LOG_READ_ERROR_MESSAGE, LOG_CLEAR_SUCCESS_MESSAGE, LOG_CLEAR_ERROR_MESSAGE, BRUTE_FORCE_ATTEMPTS_COUNT, BRUTE_FORCE_USERNAME, BRUTE_FORCE_PASSWORD, BRUTE_FORCE_HOSTNAME, BRUTE_FORCE_PORT, BRUTE_FORCE_AUTH_PATH, BRUTE_FORCE_UNAUTHORIZED_STATUS, SHUTDOWN_COMMAND, SHUTDOWN_DELAY_MS } = require("../settings/serverMetaSettings");
 
 const BRUTE_FORCE_ATTEMPTS = BRUTE_FORCE_ATTEMPTS_COUNT;
@@ -33,7 +33,7 @@ router.get(HEALTH_FULL_ENDPOINT, isAuthenticated, async (req, res) => {
 router.post(RESET_LOGIN_ATTEMPTS_ENDPOINT, isAuthenticated, (req, res) => {
   if (console.debug) console.debug(`[META] ${RESET_LOGIN_ATTEMPTS_ENDPOINT} POST called by ${req.userIp || "unknown IP"}`);
   const { targetIp } = req.body;
-  resetLoginAttempts(targetIp || null); // Reset for specific IP or all
+  resetLoginAttempts(targetIp || null);
   res.json({ message: RESET_LOGIN_ATTEMPTS_MESSAGE });
 });
 
@@ -100,8 +100,8 @@ router.get(LOG_SIZE_ENDPOINT, isAuthenticated, (req, res) => {
   }
 });
 
-const { testUsers } = require("../utils/endpointUtils"); // Import testUsers
-const { testData } = require("../utils/endpointUtils"); // Import testData
+const { testUsers } = require("../utils/endpointUtils");
+const { testData } = require("../utils/endpointUtils");
 
 router.post(CLEANUP_USER_ENDPOINT, isAuthenticated, (req, res) => {
   const userId = parseInt(req.params.id, 10);

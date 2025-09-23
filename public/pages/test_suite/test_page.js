@@ -8,7 +8,6 @@ import * as settings from '../../settings/settings.js';
 export function App() {
   
   const page = html`
-    <link rel="stylesheet" href="/public/pages/test_suite/test_suite.css">
     <div class="test-suite">
       <div class="test-header">
         <h1>Test-Suite</h1>
@@ -135,7 +134,7 @@ export function App() {
 
   const testFunctions = {
     'GET /api/v1/hello': async () => {
-      await loginTestUser(); // Log in test user
+      await loginTestUser();
       return executeFetchTest('/api/v1/hello', { method: 'GET' }, 200, (res, data) => res.ok);
     },
     
@@ -155,7 +154,7 @@ export function App() {
     },
     
     'GET /api/v1/users': async () => {
-      await loginTestUser(); // Log in test user
+      await loginTestUser();
       return executeFetchTest(
         '/api/v1/users',
         { method: 'GET' },
@@ -172,8 +171,8 @@ export function App() {
       };
       
       try {
-        await fetch('/api/v1/meta/reset-test-state', { method: 'POST' }); // Reset test state
-        await loginTestUser(); // Log in test user
+        await fetch('/api/v1/meta/reset-test-state', { method: 'POST' });
+        await loginTestUser();
         const createResponse = await fetch('/api/v1/users', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -327,8 +326,8 @@ export function App() {
       const NUM_USERS = testConfig.CONCURRENT_USER_CREATION_COUNT;
       const promises = [];
       
-      await fetch('/api/v1/meta/reset-test-state', { method: 'POST' }); // Reset test state
-      await loginTestUser(); // Log in test user
+      await fetch('/api/v1/meta/reset-test-state', { method: 'POST' });
+      await loginTestUser();
       for (let i = 0; i < NUM_USERS; i++) {
         const testUser = {
           name: `Concurrent User ${i}`,
@@ -358,9 +357,9 @@ export function App() {
       let userId;
 
       try {
-        await fetch('/api/v1/meta/reset-test-state', { method: 'POST' }); // Reset test state
-        await loginTestUser(); // Log in test user
-        // Create user
+        await fetch('/api/v1/meta/reset-test-state', { method: 'POST' });
+        await loginTestUser();
+        
         const createResult = await executeFetchTest(
           '/api/v1/users',
           {
@@ -368,13 +367,12 @@ export function App() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(testUser)
           },
-          201, // Expected status for creation
+          201,
           (res, data) => res.ok
         );
         if (!createResult.success) throw new Error(createResult.message || 'Failed to create user');
         userId = createResult.data.user.id;
 
-        // Read user
         const readResult = await executeFetchTest(
           `/api/v1/users/${userId}`,
           { method: 'GET' },
@@ -383,7 +381,6 @@ export function App() {
         );
         if (!readResult.success) throw new Error(readResult.message || 'Failed to read user or data mismatch');
 
-        // Update user
         const updatedUser = { ...testUser, name: 'Updated CRUD User' };
         const updateResult = await executeFetchTest(
           `/api/v1/users/${userId}`,
@@ -405,7 +402,6 @@ export function App() {
         );
         if (!checkUpdateResult.success) throw new Error(checkUpdateResult.message || 'Update verification failed');
 
-        // Delete user
         const deleteResult = await executeFetchTest(
           `/api/v1/users/${userId}`,
           { method: 'DELETE' },
@@ -428,19 +424,17 @@ export function App() {
           expectedStatus: 200
         };
       } finally {
-        // Ensure cleanup even if test fails midway
         if (userId) {
           try {
             await fetch(`/api/v1/meta/cleanup-user/${userId}`, { method: 'POST' });
           } catch (e) {
-            // Expected 404s from server-side cleanup should not be logged as errors
           }
         }
       }
     },
 
     'Brute-Force Login Attempt': async () => {
-      await loginTestUser(); // Log in test user first
+      await loginTestUser();
       return executeFetchTest(
         '/api/v1/meta/run-brute-force-test',
         {
@@ -457,9 +451,8 @@ export function App() {
       let dataId;
 
       try {
-        await fetch('/api/v1/meta/reset-test-state', { method: 'POST' }); // Reset test state
-        await loginTestUser(); // Log in test user
-        // Create data
+        await fetch('/api/v1/meta/reset-test-state', { method: 'POST' });
+        await loginTestUser();
         const createResult = await executeFetchTest(
           '/api/v1/data',
           {
@@ -473,7 +466,6 @@ export function App() {
         if (!createResult.success) throw new Error(createResult.message || 'Failed to create data');
         dataId = createResult.data.data.id;
 
-        // Read data
         const readResult = await executeFetchTest(
           `/api/v1/data/${dataId}`,
           { method: 'GET' },
@@ -482,7 +474,6 @@ export function App() {
         );
         if (!readResult.success) throw new Error(readResult.message || 'Failed to read data or data mismatch');
 
-        // Update data
         const updatedData = { ...testData, value: 'Updated Data' };
         const updateResult = await executeFetchTest(
           `/api/v1/data/${dataId}`,
@@ -504,7 +495,6 @@ export function App() {
         );
         if (!checkUpdateResult.success) throw new Error(checkUpdateResult.message || 'Update verification failed');
 
-        // Delete data
         const deleteResult = await executeFetchTest(
           `/api/v1/data/${dataId}`,
           { method: 'DELETE' },
@@ -527,21 +517,19 @@ export function App() {
           expectedStatus: 200
         };
       } finally {
-        // Ensure cleanup even if test fails midway
         if (dataId) {
           try {
             await fetch(`/api/v1/meta/cleanup-data/${dataId}`, { method: 'POST' });
           } catch (e) {
-            // Expected 404s from server-side cleanup should not be logged as errors
           }
         }
       }
     },
     'Large Data Payload Test': async () => {
-      const largeData = { content: 'a'.repeat(testConfig.LARGE_DATA_PAYLOAD_SIZE) }; // 500KB of data
+      const largeData = { content: 'a'.repeat(testConfig.LARGE_DATA_PAYLOAD_SIZE) };
 
       try {
-        await loginTestUser(); // Log in test user
+        await loginTestUser();
         const createResult = await executeFetchTest(
           '/api/v1/data',
           {
@@ -555,7 +543,6 @@ export function App() {
 
         if (!createResult.success) throw new Error(createResult.message || 'Failed to send large data or data not processed correctly');
 
-        // Cleanup if a specific ID is returned and can be deleted
         if (createResult.data && createResult.data.data && createResult.data.data.id) {
           await fetch(`/api/v1/data/${createResult.data.data.id}`, { method: 'DELETE' });
         }
@@ -580,10 +567,9 @@ export function App() {
       const userIds = [];
 
       try {
-        await fetch('/api/v1/meta/reset-test-state', { method: 'POST' }); // Reset test state
-        await loginTestUser(); // Log in test user
+        await fetch('/api/v1/meta/reset-test-state', { method: 'POST' });
+        await loginTestUser();
         for (let i = 0; i < NUM_OPERATIONS; i++) {
-          // Create user
           const createResult = await executeFetchTest(
             '/api/v1/users',
             {
@@ -597,7 +583,6 @@ export function App() {
           if (!createResult.success) throw new Error(createResult.message || `Failed to create user ${i}`);
           userIds.push(createResult.data.user.id);
 
-          // Delete user immediately
           const deleteResult = await executeFetchTest(
             `/api/v1/users/${createResult.data.user.id}`,
             { method: 'DELETE' },
@@ -635,7 +620,7 @@ export function App() {
       status: response.status,
       message: data.message || `API-Anfrage an ${url} abgeschlossen`,
       expectedStatus: expectedStatus,
-      data: data // Store the full response data
+      data: data
     };
   }
 
@@ -649,7 +634,7 @@ export function App() {
       if (!testFunction) {
         addOutputProxy(`${testName} - ÜBERSPRUNGEN (Keine Testimplementierung)`, 'warning');
         updateTestItemUIProxy(testName, 'warning', 0);
-        return; // Exit early for skipped tests
+        return;
       }
       
       const result = await testFunction();
@@ -673,7 +658,7 @@ export function App() {
 
   
   runAllBtn.addEventListener('click', () => {
-    resetTestResultsUIProxy(); // Reset UI and live stats before running all tests
+    resetTestResultsUIProxy();
     addOutputProxy('Starte komplette Test-Suite...');
     testSuites.forEach(suite => {
       suite.tests.forEach(test => {
@@ -683,7 +668,7 @@ export function App() {
   });
 
   runFailedBtn.addEventListener('click', () => {
-    resetTestResultsUIProxy(); // Reset UI and live stats before running failed tests
+    resetTestResultsUIProxy();
     addOutputProxy('Führe nur fehlgeschlagene Tests aus...');
     testSuites.forEach(suite => {
       suite.tests
@@ -704,7 +689,7 @@ export function App() {
 
   suiteButtons.forEach(btn => {
     btn.addEventListener('click', (e) => {
-      resetTestResultsUIProxy(); // Reset UI and live stats before running the suite
+      resetTestResultsUIProxy();
       const suiteId = e.target.dataset.suite;
       const suite = testSuites.find(s => s.id === suiteId);
       if (suite) {
@@ -726,7 +711,7 @@ export function App() {
       if (!nameEl) return;
       const testName = nameEl.textContent.trim();
       
-      resetTestResultsUIProxy(); // Reset UI and live stats before running a single test
+      resetTestResultsUIProxy();
       runTest(testName);
     });
   }

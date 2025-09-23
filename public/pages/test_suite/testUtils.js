@@ -48,7 +48,6 @@ export function getStatusIcon(status) {
 }
 
 export const addOutput = (testOutput, message, type = 'info') => {
-  // Do not log expected 401s from brute force test as errors in the UI console
   if (type === 'error' && message.includes('Anfragen führten zu erwartetem 401 Unauthorized/Ratelimit')) {
     return;
   }
@@ -70,15 +69,13 @@ export function updateTestItemUI(testSuites, liveTestResults, testName, statusCl
     const test = suite && suite.tests.find(t => t.name.trim() === testName.trim());
 
     if (test) {
-      // Decrement old status count, increment new status count
       if (liveTestResults.hasOwnProperty(test.status)) {
         liveTestResults[test.status]--;
       }
-      test.status = statusClass; // Update the status in the testSuites array
+      test.status = statusClass;
       if (liveTestResults.hasOwnProperty(statusClass)) {
         liveTestResults[statusClass]++;
       }
-      // updateLiveStats is called from the main App function
     }
 
     item.classList.remove('passed', 'failed', 'warning', 'pending');
@@ -101,7 +98,6 @@ export const resetTestResultsUI = (testOutput, liveTestResults, testSuites, upda
   liveTestResults.warning = 0;
   liveTestResults.pending = testSuites.reduce((sum, suite) => sum + suite.tests.length, 0);
 
-  // Reset all test statuses to pending first
   testSuites.forEach(suite => {
     suite.tests.forEach(test => {
       test.status = 'pending';

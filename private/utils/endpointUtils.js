@@ -13,10 +13,10 @@ let testData = {
   records: INITIAL_TEST_DATA_RECORDS
 };
 
-const initialTestUsers = JSON.parse(JSON.stringify(testUsers)); // Store initial state as a deep copy
-const initialNextUserId = nextUserId; // Store initial state
-const initialTestData = JSON.parse(JSON.stringify(testData)); // Deep copy
-const initialNextDataId = nextDataId; // Store initial state
+const initialTestUsers = JSON.parse(JSON.stringify(testUsers));
+const initialNextUserId = nextUserId;
+const initialTestData = JSON.parse(JSON.stringify(testData));
+const initialNextDataId = nextDataId;
 
 const resetTestState = () => {
   testUsers = [...initialTestUsers];
@@ -76,5 +76,5 @@ module.exports = {
     return nextDataId++;
   },
   testData,
-  resetTestState // Export the new function
+  resetTestState
 };

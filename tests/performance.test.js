@@ -11,7 +11,6 @@ describe('Leistungstests', () => {
     const res = await auth(request(app).get('/api/v1/hello'));
     const duration = Date.now() - start;
     expect(res.status).toBe(200);
-    // Aim for 200ms, but allow a small buffer for CI machines
     expect(duration).toBeLessThanOrEqual(250);
   });
 
@@ -31,7 +30,6 @@ describe('Leistungstests', () => {
     const after = process.memoryUsage().heapUsed;
 
     const deltaMB = (after - before) / (1024 * 1024);
-    // Ensure no suspicious memory growth from repeated log reads
     expect(deltaMB).toBeLessThan(200);
   });
 });

@@ -19,7 +19,6 @@ export function App() {
   ];
 
   const pageContent = html`
-    <link rel="stylesheet" href="/public/pages/_main_page/_main_page.css">
     <div class="dashboard">
       <div class="dashboard-header">
         <h1>Willkommen zur API-Konsole</h1>

@@ -1,7 +1,6 @@
 const request = require('supertest');
 const app = require('../main');
 
-// Helper to attach auth cookie for all requests
 const auth = (req) => req.set('Cookie', ['authenticated=true']);
 
 describe('Integrationstests', () => {
@@ -23,7 +22,6 @@ describe('Integrationstests', () => {
     expect(res.body).toHaveProperty('testMode', true);
   });
 
-  // Bonus: a few API endpoint basics to mirror the UI suite
   test('GET /api/v1/hello', async () => {
     const res = await auth(request(app).get('/api/v1/hello'));
     expect(res.status).toBe(200);
@@ -69,8 +67,5 @@ describe('Integrationstests', () => {
     }
     const createResponses = await Promise.all(createUsersPromises);
     expect(createResponses.filter(res => res.status === 201).length).toBe(NUM_USERS);
-
-    // Optional: Clean up created users (requires a way to get all user IDs)
-    // For now, we'll just check creation succeeded.
   });
 });
