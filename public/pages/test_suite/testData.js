@@ -1,4 +1,3 @@
-
 import * as TestSettings from "/public/settings/testSettings.js";
 
 export const testSuites = [

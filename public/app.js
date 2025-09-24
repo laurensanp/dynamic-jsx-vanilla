@@ -7,10 +7,9 @@ import { setActiveNavButton } from "./setup/navigation.js";
 import * as Settings from "./settings/settings.js";
 import * as AppSettings from "./settings/appSettings.js";
 
-
 render(layout, document.body);
 
-const root = document.getElementById("page-content"); 
+const root = document.getElementById("page-content");
 const logoutButton = document.getElementById("logout_btn");
 
 setupLogout(logoutButton);

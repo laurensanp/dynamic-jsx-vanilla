@@ -11,7 +11,8 @@ module.exports = {
   USERNAME_PASSWORD_REQUIRED_MESSAGE: "Username and password are required",
   AUTHENTICATION_SUCCESS_MESSAGE: "Authentication successful",
   INVALID_CREDENTIALS_MESSAGE: "Invalid credentials",
-  RATE_LIMIT_EXCEEDED_MESSAGE: "Too many login attempts. Please try again later.",
+  RATE_LIMIT_EXCEEDED_MESSAGE:
+    "Too many login attempts. Please try again later.",
   IP_RESET_LOG_MESSAGE: (ip) => `Login attempts for IP ${ip} reset.`,
   ALL_RESET_LOG_MESSAGE: "All login attempts reset.",
 };

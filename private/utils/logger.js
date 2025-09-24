@@ -17,34 +17,40 @@ const originalDebug = console.debug.bind(console);
 
 function formatLogMessage(type, category, ...args) {
   const timestamp = new Date().toLocaleTimeString();
-  const categoryPrefix = category ? `[${category}] ` : '';
-  const message = args.join(' ');
-  return `[${timestamp}] ${type ? `[${type}] ` : ''}${categoryPrefix}${message}`;
+  const categoryPrefix = category ? `[${category}] ` : "";
+  const message = args.join(" ");
+  return `[${timestamp}] ${
+    type ? `[${type}] ` : ""
+  }${categoryPrefix}${message}`;
 }
 
-const createLogger = (originalConsoleMethod, type, category = '') => (...args) => {
-  const formattedMessage = formatLogMessage(type, category, ...args);
-  originalConsoleMethod(formattedMessage);
-  fs.appendFile(LOG_FILE, formattedMessage + '\n', (err) => {
-    if (err) {
-      originalError(`${ServerLoggerSettings.LOG_FILE_WRITE_ERROR} ${err.message}`);
-    }
-  });
-};
+const createLogger =
+  (originalConsoleMethod, type, category = "") =>
+  (...args) => {
+    const formattedMessage = formatLogMessage(type, category, ...args);
+    originalConsoleMethod(formattedMessage);
+    fs.appendFile(LOG_FILE, formattedMessage + "\n", (err) => {
+      if (err) {
+        originalError(
+          `${ServerLoggerSettings.LOG_FILE_WRITE_ERROR} ${err.message}`
+        );
+      }
+    });
+  };
 
 const customConsole = {};
 
-customConsole.log = createLogger(originalLog, '', '');
-customConsole.error = createLogger(originalError, 'ERROR', '');
-customConsole.warn = createLogger(originalWarn, 'WARN', ''); 
-customConsole.debug = createLogger(originalDebug, 'DEBUG', ''); 
+customConsole.log = createLogger(originalLog, "", "");
+customConsole.error = createLogger(originalError, "ERROR", "");
+customConsole.warn = createLogger(originalWarn, "WARN", "");
+customConsole.debug = createLogger(originalDebug, "DEBUG", "");
 
-customConsole.log.user = createLogger(originalLog, '', 'USER');
-customConsole.log.server = createLogger(originalLog, '', 'SERVER');
-customConsole.log.api = createLogger(originalLog, '', 'API');
+customConsole.log.user = createLogger(originalLog, "", "USER");
+customConsole.log.server = createLogger(originalLog, "", "SERVER");
+customConsole.log.api = createLogger(originalLog, "", "API");
 
-customConsole.error.os = createLogger(originalError, 'ERROR', 'OS');
-customConsole.error.shutdown = createLogger(originalError, 'ERROR', 'SHUTDOWN');
+customConsole.error.os = createLogger(originalError, "ERROR", "OS");
+customConsole.error.shutdown = createLogger(originalError, "ERROR", "SHUTDOWN");
 
 global.console = customConsole;
 

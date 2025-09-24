@@ -1,11 +1,16 @@
 import { html } from "../../setup/dom.js";
-import { tailLogs, filterLogs, renderLogs, updateStats, formatTimestampText, downloadLogs } from "./logUtils.js";
+import {
+  tailLogs,
+  filterLogs,
+  renderLogs,
+  updateStats,
+  formatTimestampText,
+  downloadLogs,
+} from "./logUtils.js";
 import { fetchLogs, clearServerLogs } from "./logService.js";
 import * as LogViewerSettings from "../../settings/log_viewerSettings.js";
 
 export function App() {
-  
-  
   const page = html`
     <div class="log-viewer">
       <div class="log-header">
@@ -25,7 +30,7 @@ export function App() {
               <option value="debug">Debug</option>
             </select>
           </div>
-          
+
           <div class="filter-group">
             <label for="module_filter">Modul:</label>
             <select id="module_filter">
@@ -39,12 +44,16 @@ export function App() {
               <option value="external">Extern</option>
             </select>
           </div>
-          
         </div>
 
         <div class="log-actions">
-          <input type="text" id="search_input" class="log-search" placeholder="Protokolle durchsuchen..." />
-          
+          <input
+            type="text"
+            id="search_input"
+            class="log-search"
+            placeholder="Protokolle durchsuchen..."
+          />
+
           <button id="clear_btn" class="btn btn-ghost">Leeren</button>
           <button id="export_btn" class="btn btn-ghost">Exportieren</button>
         </div>
@@ -86,30 +95,32 @@ export function App() {
 }
 
 export function onMount(rootElement) {
-  const logOutput = rootElement.querySelector('#log_output');
-  const levelFilter = rootElement.querySelector('#level_filter');
-  const moduleFilter = rootElement.querySelector('#module_filter');
-  const searchInput = rootElement.querySelector('#search_input');
-  const clearBtn = rootElement.querySelector('#clear_btn');
-  const exportBtn = rootElement.querySelector('#export_btn');
+  const logOutput = rootElement.querySelector("#log_output");
+  const levelFilter = rootElement.querySelector("#level_filter");
+  const moduleFilter = rootElement.querySelector("#module_filter");
+  const searchInput = rootElement.querySelector("#search_input");
+  const clearBtn = rootElement.querySelector("#clear_btn");
+  const exportBtn = rootElement.querySelector("#export_btn");
 
-  const errorCount = rootElement.querySelector('#error_count');
-  const warnCount = rootElement.querySelector('#warn_count');
-  const infoCount = rootElement.querySelector('#info_count');
-  const debugCount = rootElement.querySelector('#debug_count');
+  const errorCount = rootElement.querySelector("#error_count");
+  const warnCount = rootElement.querySelector("#warn_count");
+  const infoCount = rootElement.querySelector("#info_count");
+  const debugCount = rootElement.querySelector("#debug_count");
 
   let logs = [];
   let filteredLogs = [];
   let logsInterval = null;
-  const logStatusIndicator = rootElement.querySelector('.status-indicator');
-  const logStatusText = rootElement.querySelector('.log-status span:last-child');
+  const logStatusIndicator = rootElement.querySelector(".status-indicator");
+  const logStatusText = rootElement.querySelector(
+    ".log-status span:last-child"
+  );
 
   const startLogRefresh = (interval) => {
     if (logsInterval) clearInterval(logsInterval);
     logsInterval = setInterval(fetchLogsProxy, interval);
-    logStatusIndicator.classList.add('active');
-    logStatusText.textContent = 'Live';
-    logOutput.classList.remove('hidden');
+    logStatusIndicator.classList.add("active");
+    logStatusText.textContent = "Live";
+    logOutput.classList.remove("hidden");
   };
 
   const stopLogRefresh = () => {
@@ -117,13 +128,24 @@ export function onMount(rootElement) {
       clearInterval(logsInterval);
       logsInterval = null;
     }
-    logStatusIndicator.classList.remove('active');
-    logStatusText.textContent = 'Getrennt';
-    logOutput.classList.add('hidden');
+    logStatusIndicator.classList.remove("active");
+    logStatusText.textContent = "Getrennt";
+    logOutput.classList.add("hidden");
   };
 
   const filterLogsProxy = () => {
-    filteredLogs = filterLogs(logs, logOutput, levelFilter, moduleFilter, searchInput, errorCount, warnCount, infoCount, debugCount, renderLogs);
+    filteredLogs = filterLogs(
+      logs,
+      logOutput,
+      levelFilter,
+      moduleFilter,
+      searchInput,
+      errorCount,
+      warnCount,
+      infoCount,
+      debugCount,
+      renderLogs
+    );
   };
 
   const fetchLogsProxy = async () => {
@@ -134,22 +156,22 @@ export function onMount(rootElement) {
     }
   };
 
-  levelFilter.addEventListener('change', filterLogsProxy);
-  moduleFilter.addEventListener('change', filterLogsProxy);
-  searchInput.addEventListener('input', filterLogsProxy);
-  
-  clearBtn.addEventListener('click', async () => {
+  levelFilter.addEventListener("change", filterLogsProxy);
+  moduleFilter.addEventListener("change", filterLogsProxy);
+  searchInput.addEventListener("input", filterLogsProxy);
+
+  clearBtn.addEventListener("click", async () => {
     logs = await clearServerLogs(logs, filterLogsProxy);
   });
-  
-  exportBtn.addEventListener('click', () => {
+
+  exportBtn.addEventListener("click", () => {
     downloadLogs(filteredLogs);
   });
 
   fetchLogsProxy();
   startLogRefresh(LogViewerSettings.LOG_REFRESH_INTERVAL_MS);
-  
-  rootElement.addEventListener('unload', () => {
+
+  rootElement.addEventListener("unload", () => {
     if (logsInterval) {
       clearInterval(logsInterval);
     }

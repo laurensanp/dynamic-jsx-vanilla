@@ -15,7 +15,9 @@ router.use(metaRoutes);
 router.use(dataRoutes);
 
 router.get("/", isAuthenticated, (req, res) => {
-  res.sendFile(path.join(__dirname, ServerPathsSettings.PUBLIC_INDEX_HTML_PATH));
+  res.sendFile(
+    path.join(__dirname, ServerPathsSettings.PUBLIC_INDEX_HTML_PATH)
+  );
 });
 
 module.exports = router;

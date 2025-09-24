@@ -9,8 +9,8 @@ function loadCssForPage(cssPath) {
       currentCssLink.remove();
     }
 
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
     link.href = cssPath;
     link.onload = () => {
       currentCssLink = link;
@@ -21,13 +21,15 @@ function loadCssForPage(cssPath) {
   });
 }
 
-export async function setupPageSwitching(root, pagesConfig, onPageChange = null) {
-  
+export async function setupPageSwitching(
+  root,
+  pagesConfig,
+  onPageChange = null
+) {
   function showLoading() {
     root.innerHTML = PageSwitchSettings.LOADING_HTML;
   }
-  
-  
+
   async function loadPage(config) {
     let fullModulePath;
     try {
@@ -36,28 +38,27 @@ export async function setupPageSwitching(root, pagesConfig, onPageChange = null)
       if (config.cssPath) {
         await loadCssForPage(config.cssPath);
       }
-      
-      fullModulePath = PageSwitchSettings.PAGE_MODULE_BASE_PATH + config.modulePath;
+
+      fullModulePath =
+        PageSwitchSettings.PAGE_MODULE_BASE_PATH + config.modulePath;
       const module = await import(fullModulePath);
-      root.innerHTML = '';
+      root.innerHTML = "";
       const pageContent = module.App();
       root.appendChild(pageContent);
       currentPageId = config.buttonId;
 
-      if (typeof module.onMount === 'function') {
+      if (typeof module.onMount === "function") {
         module.onMount(root);
       }
 
       if (onPageChange) {
         onPageChange(config.buttonId);
       }
-      
-      
+
       if (config.title) {
         document.title = `${config.title}${PageSwitchSettings.DEFAULT_PAGE_TITLE_SUFFIX}`;
       }
-      
-      
+
       if (onPageChange) {
         onPageChange(config.buttonId);
       }
@@ -67,7 +68,6 @@ export async function setupPageSwitching(root, pagesConfig, onPageChange = null)
     }
   }
 
-  
   for (const config of pagesConfig) {
     if (config.buttonId === "none") continue;
 
@@ -81,9 +81,9 @@ export async function setupPageSwitching(root, pagesConfig, onPageChange = null)
     button.addEventListener("click", () => loadPage(config));
   }
 
-  
   if (pagesConfig.length > 0) {
-    const defaultPageConfig = pagesConfig.find(config => config.isDefault) || pagesConfig[0];
+    const defaultPageConfig =
+      pagesConfig.find((config) => config.isDefault) || pagesConfig[0];
     await loadPage(defaultPageConfig);
   }
 }

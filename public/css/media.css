@@ -4,16 +4,16 @@
     flex-direction: column;
     gap: var(--space-sm);
   }
-  
+
   .nav-links {
     flex-wrap: wrap;
     justify-content: center;
   }
-  
+
   .container {
     padding: 0 var(--space-md);
   }
-  
+
   .btn {
     padding: var(--space-xs) var(--space-md);
     font-size: var(--font-size-xs);

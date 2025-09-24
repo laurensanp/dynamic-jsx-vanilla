@@ -20,12 +20,11 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-xl);
-  align-items: start; 
+  align-items: start;
 }
 
-
-.api-output { 
-  align-self: start; 
+.api-output {
+  align-self: start;
 }
 
 .endpoint-group {
@@ -63,10 +62,22 @@
   text-transform: uppercase;
 }
 
-.method-badge.get { background: var(--success); color: white; }
-.method-badge.post { background: var(--primary); color: white; }
-.method-badge.put { background: var(--warning); color: white; }
-.method-badge.delete { background: var(--error); color: white; }
+.method-badge.get {
+  background: var(--success);
+  color: white;
+}
+.method-badge.post {
+  background: var(--primary);
+  color: white;
+}
+.method-badge.put {
+  background: var(--warning);
+  color: white;
+}
+.method-badge.delete {
+  background: var(--error);
+  color: white;
+}
 
 .custom-request {
   padding: var(--space-md);
@@ -126,13 +137,13 @@
   .api-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .endpoint-item {
     flex-direction: column;
     gap: var(--space-sm);
     align-items: stretch;
   }
-  
+
   .request-builder {
     flex-direction: column;
     align-items: stretch;

@@ -22,7 +22,7 @@
 
 .log-controls {
   display: flex;
-  justify-content: space-between;
+  justify-content: pace-between;
   align-items: center;
   margin-bottom: var(--space-lg);
   flex-wrap: wrap;
@@ -87,10 +87,22 @@
   font-size: var(--font-size-sm);
 }
 
-.stat-badge.error { background: rgba(245, 101, 101, 0.1); color: var(--error); }
-.stat-badge.warning { background: rgba(237, 137, 54, 0.1); color: var(--warning); }
-.stat-badge.info { background: rgba(66, 153, 225, 0.1); color: var(--info); }
-.stat-badge.debug { background: rgba(160, 174, 192, 0.1); color: var(--text-muted); }
+.stat-badge.error {
+  background: rgba(245, 101, 101, 0.1);
+  color: var(--error);
+}
+.stat-badge.warning {
+  background: rgba(237, 137, 54, 0.1);
+  color: var(--warning);
+}
+.stat-badge.info {
+  background: rgba(66, 153, 225, 0.1);
+  color: var(--info);
+}
+.stat-badge.debug {
+  background: rgba(160, 174, 192, 0.1);
+  color: var(--text-muted);
+}
 
 .stat-count {
   font-weight: 700;
@@ -135,8 +147,13 @@
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .log-output {
@@ -158,10 +175,18 @@
   border-left: 3px solid transparent;
 }
 
-.log-entry.error { border-left-color: var(--error); }
-.log-entry.warn { border-left-color: var(--warning); }
-.log-entry.info { border-left-color: var(--info); }
-.log-entry.debug { border-left-color: var(--text-muted); }
+.log-entry.error {
+  border-left-color: var(--error);
+}
+.log-entry.warn {
+  border-left-color: var(--warning);
+}
+.log-entry.info {
+  border-left-color: var(--info);
+}
+.log-entry.debug {
+  border-left-color: var(--text-muted);
+}
 
 .log-timestamp {
   color: var(--text-muted);
@@ -178,10 +203,18 @@
   flex-shrink: 0;
 }
 
-.log-level.error { color: var(--error); }
-.log-level.warn { color: var(--warning); }
-.log-level.info { color: var(--info); }
-.log-level.debug { color: var(--text-muted); }
+.log-level.error {
+  color: var(--error);
+}
+.log-level.warn {
+  color: var(--warning);
+}
+.log-level.info {
+  color: var(--info);
+}
+.log-level.debug {
+  color: var(--text-muted);
+}
 
 .log-module {
   color: var(--text-accent);
@@ -205,16 +238,16 @@
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .log-filters,
   .log-actions {
     justify-content: center;
   }
-  
+
   .log-stats {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .log-entry {
     flex-direction: column;
     gap: var(--space-xs);

@@ -1,4 +1,3 @@
-
 const store = new Map();
 const ServerCacheSettings = require("../settings/serverCacheSettings");
 

@@ -1,12 +1,12 @@
 import { html } from "../../setup/dom.js";
 
 export function App() {
-    const Page = html`
+  const Page = html`
     <div class="page-page">
-        <div class="page-header">
-            <h1>Hallo</h1>
-        </div>
+      <div class="page-header">
+        <h1>Hallo</h1>
+      </div>
     </div>
-    `
-    return Page;
+  `;
+  return Page;
 }

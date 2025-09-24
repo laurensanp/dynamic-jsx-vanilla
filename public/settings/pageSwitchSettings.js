@@ -1,5 +1,5 @@
-export const PAGE_MODULE_BASE_PATH = '/public/';
-export const DEFAULT_PAGE_TITLE_SUFFIX = ' - API Console';
+export const PAGE_MODULE_BASE_PATH = "/public/";
+export const DEFAULT_PAGE_TITLE_SUFFIX = " - API Console";
 export const LOADING_HTML = `
   <div class="flex items-center justify-center" style="min-height: 200px;">
     <div class="loading" style="width: 40px; height: 40px;"></div>

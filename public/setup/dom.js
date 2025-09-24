@@ -1,7 +1,10 @@
 import * as DomSettings from "../settings/domSettings.js";
 
 export function html(strings, ...values) {
-  const template = strings.reduce((acc, str, i) => acc + str + (values[i] ?? ""), "");
+  const template = strings.reduce(
+    (acc, str, i) => acc + str + (values[i] ?? ""),
+    ""
+  );
   const container = document.createElement("div");
   container.innerHTML = template.trim();
 
@@ -17,67 +20,68 @@ export function render(element, container) {
   container.appendChild(element);
 }
 
-
-
-
-export function createElement(tag, attributes = {}, content = '') {
+export function createElement(tag, attributes = {}, content = "") {
   const element = document.createElement(tag);
-  
-  
+
   Object.entries(attributes).forEach(([key, value]) => {
-    if (key === 'className') {
+    if (key === "className") {
       element.className = value;
-    } else if (key === 'style' && typeof value === 'object') {
+    } else if (key === "style" && typeof value === "object") {
       Object.assign(element.style, value);
-    } else if (key.startsWith('on') && typeof value === 'function') {
+    } else if (key.startsWith("on") && typeof value === "function") {
       element.addEventListener(key.slice(2).toLowerCase(), value);
     } else {
       element.setAttribute(key, value);
     }
   });
-  
-  
-  if (typeof content === 'string') {
+
+  if (typeof content === "string") {
     element.innerHTML = content;
   } else if (content instanceof Node) {
     element.appendChild(content);
   } else if (Array.isArray(content)) {
-    content.forEach(child => {
-      if (typeof child === 'string') {
+    content.forEach((child) => {
+      if (typeof child === "string") {
         element.appendChild(document.createTextNode(child));
       } else if (child instanceof Node) {
         element.appendChild(child);
       }
     });
   }
-  
+
   return element;
 }
-
 
 export function createModal(options = {}) {
   const {
     title = DomSettings.DEFAULT_MODAL_TITLE,
-    content = '',
+    content = "",
     buttons = DomSettings.DEFAULT_MODAL_BUTTONS,
     closable = DomSettings.DEFAULT_MODAL_CLOSABLE,
-    size = DomSettings.DEFAULT_MODAL_SIZE
+    size = DomSettings.DEFAULT_MODAL_SIZE,
   } = options;
-  
+
   const modal = html`
     <div class="modal-overlay">
       <div class="modal modal-${size}">
         <div class="modal-header">
           <h3 class="modal-title">${title}</h3>
-          ${closable ? '<button class="modal-close btn-icon">×</button>' : ''}
+          ${closable ? '<button class="modal-close btn-icon">×</button>' : ""}
         </div>
         <div class="modal-content">${content}</div>
         <div class="modal-footer">
-          ${buttons.map(btn => `<button class="btn ${btn.class || 'btn-secondary'}" data-action="${btn.action}">${btn.text}</button>`).join('')}
+          ${buttons
+            .map(
+              (btn) =>
+                `<button class="btn ${
+                  btn.class || "btn-secondary"
+                }" data-action="${btn.action}">${btn.text}</button>`
+            )
+            .join("")}
         </div>
       </div>
     </div>
-    
+
     <style>
       .modal-overlay {
         position: fixed;
@@ -92,7 +96,7 @@ export function createModal(options = {}) {
         z-index: 1000;
         animation: fadeIn 0.2s ease-out;
       }
-      
+
       .modal {
         background: var(--surface);
         border-radius: var(--radius-lg);
@@ -102,11 +106,17 @@ export function createModal(options = {}) {
         overflow-y: auto;
         animation: slideIn 0.3s ease-out;
       }
-      
-      .modal-small { max-width: 400px; }
-      .modal-medium { max-width: 600px; }
-      .modal-large { max-width: 800px; }
-      
+
+      .modal-small {
+        max-width: 400px;
+      }
+      .modal-medium {
+        max-width: 600px;
+      }
+      .modal-large {
+        max-width: 800px;
+      }
+
       .modal-header {
         padding: var(--space-lg);
         border-bottom: 1px solid var(--border);
@@ -114,12 +124,12 @@ export function createModal(options = {}) {
         justify-content: space-between;
         align-items: center;
       }
-      
+
       .modal-title {
         margin: 0;
         font-size: var(--font-size-lg);
       }
-      
+
       .modal-close {
         font-size: var(--font-size-xl);
         color: var(--text-muted);
@@ -128,11 +138,11 @@ export function createModal(options = {}) {
         cursor: pointer;
         padding: var(--space-xs);
       }
-      
+
       .modal-content {
         padding: var(--space-lg);
       }
-      
+
       .modal-footer {
         padding: var(--space-lg);
         border-top: 1px solid var(--border);
@@ -142,7 +152,7 @@ export function createModal(options = {}) {
       }
     </style>
   `;
-  
+
   const instance = {
     element: modal,
     show() {
@@ -154,54 +164,52 @@ export function createModal(options = {}) {
         modal.parentNode.removeChild(modal);
       }
       return this;
-    }
+    },
   };
-  
-  
-  modal.addEventListener('click', (e) => {
-    if (e.target.classList.contains('modal-overlay')) {
+
+  modal.addEventListener("click", (e) => {
+    if (e.target.classList.contains("modal-overlay")) {
       if (closable) instance.hide();
     }
-    
-    if (e.target.classList.contains('modal-close')) {
+
+    if (e.target.classList.contains("modal-close")) {
       instance.hide();
     }
-    
-    if (e.target.hasAttribute('data-action')) {
+
+    if (e.target.hasAttribute("data-action")) {
       const action = e.target.dataset.action;
-      if (action === 'close') {
+      if (action === "close") {
         instance.hide();
       } else {
-        
-        modal.dispatchEvent(new CustomEvent('modal-action', { detail: action }));
+        modal.dispatchEvent(
+          new CustomEvent("modal-action", { detail: action })
+        );
       }
     }
   });
-  
+
   return instance;
 }
-
 
 export function showToast(message, options = {}) {
   const {
     type = DomSettings.DEFAULT_TOAST_TYPE,
     duration = DomSettings.DEFAULT_TOAST_DURATION,
-    position = DomSettings.DEFAULT_TOAST_POSITION
+    position = DomSettings.DEFAULT_TOAST_POSITION,
   } = options;
-  
+
   const icons = DomSettings.TOAST_ICONS;
-  
-  const toast = createElement('div', {
+
+  const toast = createElement("div", {
     className: `toast toast-${type} toast-${position}`,
     innerHTML: `
       <div class="toast-icon">${icons[type] || icons.info}</div>
       <div class="toast-message">${message}</div>
       <button class="toast-close">×</button>
-    `
+    `,
   });
-  
-  
-  const style = document.createElement('style');
+
+  const style = document.createElement("style");
   style.textContent = `
     .toast {
       position: fixed;
@@ -269,39 +277,35 @@ export function showToast(message, options = {}) {
       }
     }
   `;
-  
-  if (!document.querySelector('[data-toast-styles]')) {
-    style.dataset.toastStyles = 'true';
+
+  if (!document.querySelector("[data-toast-styles]")) {
+    style.dataset.toastStyles = "true";
     document.head.appendChild(style);
   }
-  
-  
+
   document.body.appendChild(toast);
-  
-  
+
   const hideTimer = setTimeout(() => {
-    toast.style.animation = 'slideInToast 0.3s ease-out reverse';
+    toast.style.animation = "slideInToast 0.3s ease-out reverse";
     setTimeout(() => {
       if (toast.parentNode) {
         toast.parentNode.removeChild(toast);
       }
     }, 300);
   }, duration);
-  
-  
-  toast.querySelector('.toast-close').addEventListener('click', () => {
+
+  toast.querySelector(".toast-close").addEventListener("click", () => {
     clearTimeout(hideTimer);
-    toast.style.animation = 'slideInToast 0.3s ease-out reverse';
+    toast.style.animation = "slideInToast 0.3s ease-out reverse";
     setTimeout(() => {
       if (toast.parentNode) {
         toast.parentNode.removeChild(toast);
       }
     }, 300);
   });
-  
+
   return toast;
 }
-
 
 export function debounce(func, wait) {
   let timeout;
@@ -315,14 +319,13 @@ export function debounce(func, wait) {
   };
 }
 
-
 export function throttle(func, limit) {
   let inThrottle;
   return function executedFunction(...args) {
     if (!inThrottle) {
       func.apply(this, args);
       inThrottle = true;
-      setTimeout(() => inThrottle = false, limit);
+      setTimeout(() => (inThrottle = false), limit);
     }
   };
 }

@@ -14,22 +14,38 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 600;
   line-height: 1.2;
   margin-bottom: var(--space-md);
 }
 
-h1 { font-size: var(--font-size-3xl); color: var(--text-primary); }
-h2 { font-size: var(--font-size-2xl); color: var(--text-primary); }
-h3 { font-size: var(--font-size-xl); color: var(--text-secondary); }
+h1 {
+  font-size: var(--font-size-3xl);
+  color: var(--text-primary);
+}
+h2 {
+  font-size: var(--font-size-2xl);
+  color: var(--text-primary);
+}
+h3 {
+  font-size: var(--font-size-xl);
+  color: var(--text-secondary);
+}
 
 p {
   margin-bottom: var(--space-md);
   color: var(--text-secondary);
 }
 
-input, textarea, select {
+input,
+textarea,
+select {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
@@ -39,7 +55,9 @@ input, textarea, select {
   transition: var(--transition);
 }
 
-input:focus, textarea:focus, select:focus {
+input:focus,
+textarea:focus,
+select:focus {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
