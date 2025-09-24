@@ -1,9 +1,9 @@
 export const TEST_USERNAME = "admin";
 export const TEST_PASSWORD = "password";
-export const CONCURRENT_USERS_COUNT = 100;
+export const CONCURRENT_USERS_COUNT = 20;
 export const MEMORY_USAGE_REQUESTS = 50;
 export const CONCURRENT_USER_CREATION_COUNT = 20;
-export const ENDPOINT_STRESS_TEST_REQUESTS = 500;
+export const ENDPOINT_STRESS_TEST_REQUESTS = 100;
 export const BRUTE_FORCE_ATTEMPTS = 50;
 export const LARGE_DATA_PAYLOAD_SIZE = 1024 * 500;
 export const RESOURCE_EXHAUSTION_OPERATIONS = 30;

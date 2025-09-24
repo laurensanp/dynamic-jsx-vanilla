@@ -9,6 +9,7 @@ const routes = require("./private/routes");
 
 require("./private/utils/logger");
 const { getAllEndpoints } = require("./private/utils/routerUtils");
+const getPublicIPv4 = require("./private/utils/getIp4");
 
 app.use(cors({ origin: true }));
 app.use(express.json({ limit: '1mb' }));
@@ -27,6 +28,12 @@ module.exports = app;
 
 if (require.main === module) {
   app.listen(PORT, "0.0.0.0", () => {
-    console.log.server(`running on http://localhost:${PORT}`);
+    getPublicIPv4()
+      .then(ip => {
+        console.log.server(`visit http://${ip}:${PORT}/api/v1/login to auth.`);
+      })
+      .catch(error => {
+        console.error.server('Error fetching server public IP:', error);
+      })
   });
 }
