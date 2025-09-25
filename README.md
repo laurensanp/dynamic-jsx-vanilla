@@ -34,9 +34,8 @@ Das Hauptziel des Projekts ist es, eine Plattform zum Testen und Überwachen von
 
 - **Backend**: Node.js mit dem Express.js-Framework für den API-Server.
 - **Frontend**: Reines HTML, CSS und JavaScript für eine clientseitige Anwendung, die die API-Konsole, die Test-Suite und die Systemprotokolle anzeigt.
-- **Styling**: Modernes CSS mit Variablen für Design-Tokens und einer modularen St
-  ruktur.
-- **Testing**: Jest für Unit- und Integrationstests.
+- **Styling**: Modernes CSS mit Variablen für Design-Tokens und einer modularen Struktur.
+- **Testing**: (optional; abhängig von Projektanforderungen)
 
 ### 3. Dateistruktur
 
@@ -112,12 +111,6 @@ Das Hauptziel des Projekts ist es, eine Plattform zum Testen und Überwachen von
 │       ├── logger.js       # Server-side logging utility
 │       └── routerUtils.js  # Utilities for Express router setup
 │
-├── tests/                  # Application tests
-│   ├── integration.test.js # Integration tests
-│   ├── performance.test.js # Performance tests
-│   └── testConfig.js       # Test-specific configuration (was moved from public/utils/testConfig.js)
-│
-├── jest.config.js          # Jest test runner configuration
 ├── main.js                 # Main server entry point (starts Express app)
 ├── package.json            # Project dependencies and scripts
 └── README.md               # Project documentation
